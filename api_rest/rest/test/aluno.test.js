@@ -1,0 +1,152 @@
+/**
+ * Testes para Cadastro de Aluno
+ * Cobertura de sentença e decisão
+ */
+
+const request = require('supertest');
+const app = require('../../src/app');
+const fs = require('fs');
+const path = require('path');
+const storageService = require('../../src/services/StorageService');
+const { gerarTokenParaTeste } = require('./testHelpers');
+
+describe('POST /api/alunos - Cadastro de Aluno', () => {
+    const dataPath = path.join(__dirname, 'data');
+
+    // Limpa os dados antes de cada teste
+    beforeEach(() => {
+        storageService.limparDados();
+    });
+
+    test('Cadastrar aluno com dados válidos deve retornar 201', async () => {
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(dataPath, 'cadastrarAlunoComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const response = await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty('id');
+        expect(response.body).toHaveProperty('nomeCompleto');
+        expect(response.body.message).toBe('Aluno cadastrado com sucesso');
+    });
+
+    test('Cadastrar aluno com email duplicado deve retornar 409', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        // Primeiro cadastro
+        const dadosValidos = JSON.parse(
+            fs.readFileSync(path.join(dataPath, 'cadastrarAlunoComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+        await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosValidos);
+
+        // Segundo cadastro com mesmo email
+        const dadosDuplicados = JSON.parse(
+            fs.readFileSync(dataPath + '/cadastrarAlunoComEmailDuplicadoDeveRetornar409.json', 'utf8')
+        );
+
+        const response = await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosDuplicados);
+
+        expect(response.status).toBe(409);
+        expect(response.body.message).toBe('Email já cadastrado');
+    });
+
+    test('Cadastrar aluno com campos obrigatórios faltando deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(dataPath, 'cadastrarAlunoComCamposObrigatoriosFaltandoDeveRetornar400.json'), 'utf8')
+        );
+
+        const response = await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+    });
+
+    test('Cadastrar aluno com estado inválido deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(dataPath, 'cadastrarAlunoComEstadoInvalidoDeveRetornar400.json'), 'utf8')
+        );
+
+        const response = await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        expect(response.status).toBe(400);
+    });
+});
+
+describe('GET /api/alunos - Listar Alunos', () => {
+    beforeEach(() => {
+        storageService.limparDados();
+    });
+
+    test('Listar alunos deve retornar array', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const response = await request(app)
+            .get('/api/alunos')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+    });
+});
+
+describe('GET /api/alunos/:id - Buscar Aluno por ID', () => {
+    beforeEach(() => {
+        storageService.limparDados();
+    });
+
+    test('Buscar aluno existente deve retornar 200', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        // Cadastra um aluno
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(__dirname, 'data/cadastrarAlunoComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+
+        const cadastroResponse = await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        const alunoId = cadastroResponse.body.id;
+
+        // Busca o aluno
+        const response = await request(app)
+            .get(`/api/alunos/${alunoId}`)
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('id');
+    });
+
+    test('Buscar aluno inexistente deve retornar 404', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const response = await request(app)
+            .get('/api/alunos/id_inexistente')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(404);
+    });
+});

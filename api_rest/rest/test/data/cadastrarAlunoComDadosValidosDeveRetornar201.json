@@ -1,0 +1,19 @@
+{
+    "nomeCompleto": "Carlos Andrade Silva",
+    "email": "carlos.silva@email.com",
+    "telefone": "11987654321",
+    "dataNascimento": "1995-07-20",
+    "cpf": "12345678900",
+    "planoId": "plano_premium_anual",
+    "dataInicio": "2025-10-26",
+    "endereco": {
+        "rua": "Rua das Flores",
+        "numero": "123",
+        "complemento": "Apto 10",
+        "bairro": "Centro",
+        "cidade": "São Paulo",
+        "estado": "SP",
+        "cep": "01000000"
+    },
+    "informacoesMedicas": "Nenhuma restrição conhecida."
+}
