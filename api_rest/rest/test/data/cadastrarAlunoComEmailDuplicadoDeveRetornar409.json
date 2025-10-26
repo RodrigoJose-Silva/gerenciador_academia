@@ -1,0 +1,13 @@
+{
+    "nomeCompleto": "Maria Santos",
+    "email": "carlos.silva@email.com",
+    "telefone": "11988888888",
+    "dataNascimento": "2000-05-10",
+    "endereco": {
+        "rua": "Rua dos Testes",
+        "numero": "456",
+        "cidade": "São Paulo",
+        "estado": "SP",
+        "cep": "02000000"
+    }
+}

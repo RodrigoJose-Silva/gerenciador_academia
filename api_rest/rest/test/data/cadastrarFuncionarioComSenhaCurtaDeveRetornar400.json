@@ -1,0 +1,10 @@
+{
+    "nomeCompleto": "Teste Funcionário",
+    "email": "teste@academia.com",
+    "userName": "teste_user",
+    "senha": "12345",
+    "telefone": "11912345678",
+    "dataNascimento": "1990-01-01",
+    "cargo": "Teste",
+    "salario": 2000.00
+}

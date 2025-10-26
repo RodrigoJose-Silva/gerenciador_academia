@@ -1,0 +1,13 @@
+{
+    "nomeCompleto": "João Teste",
+    "email": "teste@email.com",
+    "telefone": "11912345678",
+    "dataNascimento": "1990-01-01",
+    "endereco": {
+        "rua": "Rua Teste",
+        "numero": "123",
+        "cidade": "São Paulo",
+        "estado": "XX",
+        "cep": "01000000"
+    }
+}

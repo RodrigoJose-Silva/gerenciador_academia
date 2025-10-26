@@ -1,0 +1,13 @@
+{
+    "nomeCompleto": "Beatriz Martins",
+    "email": "beatriz.martins@academia.com",
+    "userName": "beatriz_martins",
+    "senha": "Senha@Forte123",
+    "telefone": "11912345678",
+    "dataNascimento": "1990-02-15",
+    "cpf": "98765432100",
+    "cargo": "Instrutor",
+    "dataAdmissao": "2025-01-10",
+    "cref": "123456-G/SP",
+    "salario": 3500.50
+}
