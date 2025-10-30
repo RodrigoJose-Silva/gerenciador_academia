@@ -8,6 +8,7 @@ const app = require('../../src/app');
 const fs = require('fs');
 const path = require('path');
 const storageService = require('../../src/services/StorageService');
+const { gerarTokenParaTeste } = require('./testHelpers');
 
 describe('POST /api/auth/login - Login de Funcionário', () => {
     const dataPath = path.join(__dirname, 'data');
@@ -18,10 +19,15 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
     test('Login com dados válidos deve retornar 200', async () => {
         // Primeiro cadastra um funcionário
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
         const dadosFuncionario = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
         );
-        await request(app).post('/api/funcionarios').send(dadosFuncionario);
+        await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosFuncionario);
 
         // Tenta fazer login
         const dadosLogin = JSON.parse(
@@ -34,6 +40,7 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('funcionario');
+        expect(response.body).toHaveProperty('token');
         expect(response.body.message).toBe('Login realizado com sucesso');
     });
 
@@ -52,10 +59,15 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
     test('Login com senha inválida deve retornar 401 e aumentar tentativas', async () => {
         // Cadastra um funcionário
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
         const dadosFuncionario = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
         );
-        await request(app).post('/api/funcionarios').send(dadosFuncionario);
+        await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosFuncionario);
 
         // Tenta fazer login com senha errada
         const dadosLogin = JSON.parse(
@@ -73,10 +85,15 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
     test('Login após 3 tentativas deve bloquear a conta', async () => {
         // Cadastra um funcionário
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
         const dadosFuncionario = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
         );
-        await request(app).post('/api/funcionarios').send(dadosFuncionario);
+        await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosFuncionario);
 
         // Tenta fazer login 3 vezes com senha errada
         const dadosLogin = JSON.parse(
@@ -107,10 +124,15 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
     test('Login com conta bloqueada deve retornar 403', async () => {
         // Cadastra um funcionário
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
         const dadosFuncionario = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
         );
-        await request(app).post('/api/funcionarios').send(dadosFuncionario);
+        await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosFuncionario);
 
         // Bloqueia a conta (3 tentativas falhas)
         const dadosLogin = JSON.parse(
@@ -132,10 +154,15 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
     test('Login bem-sucedido após tentativas inválidas deve resetar contador', async () => {
         // Cadastra um funcionário
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
         const dadosFuncionario = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
         );
-        await request(app).post('/api/funcionarios').send(dadosFuncionario);
+        await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosFuncionario);
 
         const dadosLoginErrado = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'loginComSenhaInvalidaAumentarTentativas.json'), 'utf8')
@@ -155,6 +182,7 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
             .send(dadosLoginCorreto);
 
         expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty('token');
 
         // Tentativa inválida após login bem-sucedido deve começar do 1
         const response2 = await request(app)

@@ -150,3 +150,107 @@ describe('GET /api/alunos/:id - Buscar Aluno por ID', () => {
         expect(response.status).toBe(404);
     });
 });
+
+describe('PUT /api/alunos/:id - Atualizar Aluno', () => {
+    beforeEach(() => {
+        storageService.limparDados();
+    });
+
+    test('Atualizar aluno existente deve retornar 200', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        // Cadastra um aluno
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(__dirname, 'data/cadastrarAlunoComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+
+        const cadastroResponse = await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        const alunoId = cadastroResponse.body.id;
+
+        // Atualiza o aluno
+        const dadosAtualizados = {
+            nomeCompleto: 'Nome Atualizado',
+            telefone: '11999999999'
+        };
+
+        const response = await request(app)
+            .put(`/api/alunos/${alunoId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosAtualizados);
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Aluno atualizado com sucesso');
+        expect(response.body.aluno.nomeCompleto).toBe('Nome Atualizado');
+    });
+
+    test('Atualizar aluno inexistente deve retornar 404', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const dadosAtualizados = {
+            nomeCompleto: 'Nome Atualizado'
+        };
+
+        const response = await request(app)
+            .put('/api/alunos/id_inexistente')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosAtualizados);
+
+        expect(response.status).toBe(404);
+    });
+});
+
+describe('DELETE /api/alunos/:id - Deletar Aluno', () => {
+    beforeEach(() => {
+        storageService.limparDados();
+    });
+
+    test('Deletar aluno existente deve retornar 200', async () => {
+        const tokenAdmin = gerarTokenParaTeste('ADMINISTRADOR');
+        const tokenRecep = gerarTokenParaTeste('RECEPCIONISTA');
+
+        // Cadastra um aluno
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(__dirname, 'data/cadastrarAlunoComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+
+        const cadastroResponse = await request(app)
+            .post('/api/alunos')
+            .set('Authorization', `Bearer ${tokenRecep}`)
+            .send(dados);
+
+        const alunoId = cadastroResponse.body.id;
+
+        // Deleta o aluno (apenas ADMINISTRADOR tem permissão)
+        const response = await request(app)
+            .delete(`/api/alunos/${alunoId}`)
+            .set('Authorization', `Bearer ${tokenAdmin}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Aluno deletado com sucesso');
+    });
+
+    test('Deletar aluno inexistente deve retornar 404', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const response = await request(app)
+            .delete('/api/alunos/id_inexistente')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(404);
+    });
+
+    test('Deletar aluno sem permissão deve retornar 403', async () => {
+        const tokenRecep = gerarTokenParaTeste('RECEPCIONISTA');
+
+        // RECEPCIONISTA não tem permissão para deletar alunos
+        const response = await request(app)
+            .delete('/api/alunos/id_qualquer')
+            .set('Authorization', `Bearer ${tokenRecep}`);
+
+        expect(response.status).toBe(403);
+    });
+});

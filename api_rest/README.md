@@ -15,7 +15,7 @@
 
 ## 🎯 Sobre o Projeto
 
-API REST desenvolvida para gerenciamento de uma academia, permitindo cadastro de alunos, funcionários e autenticação de funcionários. A API segue boas práticas de desenvolvimento, Clean Code e possui cobertura de testes com MOCK.
+API REST desenvolvida para gerenciamento de uma academia, permitindo cadastro de alunos, funcionários, planos, registro de checkins e autenticação de funcionários. A API segue boas práticas de desenvolvimento, Clean Code e possui cobertura de testes com MOCK.
 
 ## 🛠 Tecnologias Utilizadas
 
@@ -83,6 +83,8 @@ api_rest/
 │   ├── models/
 │   │   ├── Aluno.js                # Modelo de Aluno
 │   │   ├── Funcionario.js          # Modelo de Funcionário
+│   │   ├── Plano.js                # Modelo de Plano
+│   │   ├── Checkin.js              # Modelo de Checkin
 │   │   └── Permissions.js          # Definição de permissões e perfis
 │   ├── middlewares/
 │   │   └── authMiddleware.js       # Middleware de autenticação JWT
@@ -91,13 +93,19 @@ api_rest/
 │   ├── controllers/
 │   │   ├── alunoController.js      # Controller de Alunos
 │   │   ├── funcionarioController.js # Controller de Funcionários
+│   │   ├── planoController.js      # Controller de Planos
+│   │   ├── checkinController.js    # Controller de Checkins
 │   │   └── authController.js       # Controller de Autenticação
 │   ├── validators/
 │   │   ├── alunoValidators.js      # Validadores de Aluno
-│   │   └── funcionarioValidators.js # Validadores de Funcionário
+│   │   ├── funcionarioValidators.js # Validadores de Funcionário
+│   │   ├── planoValidators.js      # Validadores de Plano
+│   │   └── checkinValidators.js    # Validadores de Checkin
 │   └── routes/
 │       ├── alunoRoutes.js          # Rotas de Alunos
 │       ├── funcionarioRoutes.js    # Rotas de Funcionários
+│       ├── planoRoutes.js          # Rotas de Planos
+│       ├── checkinRoutes.js        # Rotas de Checkins
 │       └── authRoutes.js           # Rotas de Autenticação
 ├── rest/
 │   └── test/
@@ -188,6 +196,40 @@ Lista todos os alunos cadastrados.
 #### GET /api/alunos/:id
 Busca um aluno específico por ID.
 
+#### PUT /api/alunos/:id
+Atualiza um aluno existente.
+
+**Body (campos opcionais):**
+```json
+{
+  "nomeCompleto": "Carlos Silva Atualizado",
+  "telefone": "11987654321",
+  "planoId": "PLANO_PREMIUM"
+}
+```
+
+**Resposta (200):**
+```json
+{
+  "message": "Aluno atualizado com sucesso",
+  "aluno": {
+    "id": "123456789",
+    "nomeCompleto": "Carlos Silva Atualizado",
+    "email": "carlos.silva@email.com"
+  }
+}
+```
+
+#### DELETE /api/alunos/:id
+Deleta um aluno.
+
+**Resposta (200):**
+```json
+{
+  "message": "Aluno deletado com sucesso"
+}
+```
+
 ---
 
 ### Funcionários
@@ -230,6 +272,174 @@ Lista todos os funcionários cadastrados.
 
 #### GET /api/funcionarios/:id
 Busca um funcionário específico por ID.
+
+#### PUT /api/funcionarios/:id
+Atualiza um funcionário existente.
+
+**Body (campos opcionais):**
+```json
+{
+  "nomeCompleto": "Beatriz Martins Atualizado",
+  "telefone": "11912345678",
+  "cargo": "Coordenador",
+  "perfil": "GERENTE",
+  "salario": 4500.00
+}
+```
+
+**Resposta (200):**
+```json
+{
+  "message": "Funcionário atualizado com sucesso",
+  "funcionario": {
+    "id": "123456789",
+    "nomeCompleto": "Beatriz Martins Atualizado",
+    "userName": "beatriz_martins",
+    "perfil": "GERENTE"
+  }
+}
+```
+
+#### DELETE /api/funcionarios/:id
+Deleta um funcionário.
+
+**Resposta (200):**
+```json
+{
+  "message": "Funcionário deletado com sucesso"
+}
+```
+
+---
+
+### Planos
+
+#### POST /api/planos
+Cadastra um novo plano.
+
+**Body:**
+```json
+{
+  "nome": "PLANO_PREMIUM",
+  "descricao": "Acesso completo à academia e aulas",
+  "valor": 150.00,
+  "duracao": 30,
+  "beneficios": ["Acesso ilimitado", "Aulas coletivas", "Avaliação física mensal"]
+}
+```
+
+**Resposta (201):**
+```json
+{
+  "message": "Plano cadastrado com sucesso",
+  "id": "PLANO_PREMIUM",
+  "nome": "PLANO_PREMIUM"
+}
+```
+
+#### GET /api/planos
+Lista todos os planos cadastrados.
+
+#### GET /api/planos/:id
+Busca um plano específico por ID.
+
+#### PUT /api/planos/:id
+Atualiza um plano existente.
+
+**Body (campos opcionais):**
+```json
+{
+  "descricao": "Acesso completo à academia e todas as aulas",
+  "valor": 180.00,
+  "beneficios": ["Acesso ilimitado", "Aulas coletivas", "Avaliação física mensal", "Nutricionista"]
+}
+```
+
+**Resposta (200):**
+```json
+{
+  "message": "Plano atualizado com sucesso",
+  "plano": {
+    "id": "PLANO_PREMIUM",
+    "nome": "PLANO_PREMIUM",
+    "valor": 180.00
+  }
+}
+```
+
+#### DELETE /api/planos/:id
+Deleta um plano.
+
+**Resposta (200):**
+```json
+{
+  "message": "Plano deletado com sucesso"
+}
+```
+
+---
+
+### Checkins
+
+#### POST /api/checkins
+Registra um novo checkin.
+
+**Body:**
+```json
+{
+  "alunoId": "123456789",
+  "observacao": "Treino de pernas"
+}
+```
+
+**Resposta (201):**
+```json
+{
+  "message": "Checkin registrado com sucesso",
+  "id": "987654321",
+  "alunoId": "123456789",
+  "dataHora": "2023-10-26T14:30:00Z"
+}
+```
+
+#### GET /api/checkins
+Lista todos os checkins cadastrados.
+
+#### GET /api/checkins/:id
+Busca um checkin específico por ID.
+
+#### GET /api/checkins/aluno/:alunoId
+Lista todos os checkins de um aluno específico.
+
+**Resposta (200):**
+```json
+{
+  "checkins": [
+    {
+      "id": "987654321",
+      "alunoId": "123456789",
+      "dataHora": "2023-10-26T14:30:00Z",
+      "observacao": "Treino de pernas"
+    },
+    {
+      "id": "987654322",
+      "alunoId": "123456789",
+      "dataHora": "2023-10-27T16:45:00Z",
+      "observacao": "Treino de braços"
+    }
+  ]
+}
+```
+
+#### DELETE /api/checkins/:id
+Deleta um checkin.
+
+**Resposta (200):**
+```json
+{
+  "message": "Checkin deletado com sucesso"
+}
+```
 
 ---
 
@@ -293,11 +503,17 @@ npm run test:coverage
 
 ### Cobertura de Testes
 
-O projeto utiliza:
+O projeto possui **testes** cobrindo todas as funcionalidades da API:
+- Testes de cadastro, listagem, busca, atualização e exclusão de alunos
+- Testes de cadastro, listagem, busca, atualização e exclusão de funcionários
+- Testes de autenticação com bloqueio após 3 tentativas
+- Testes de validação de permissões por perfil
+
+**Tipos de Teste:**
 - **Teste de Sentença**: Valida que cada linha de código é executada
 - **Teste de Decisão**: Valida que todos os caminhos lógicos são testados (if/else, loops, etc.)
 
-Os testes estão isolados usando **MOCK**, garantindo que cada teste seja independente.
+Os testes estão isolados usando **MOCK**, garantindo que cada teste seja independente e possa ser executado isoladamente.
 
 ## 🔐 Autenticação e Autorização
 
@@ -477,7 +693,3 @@ A documentação interativa permite testar todos os endpoints diretamente pelo n
 ## 🤝 Contribuindo
 
 Este é um projeto didático. Sinta-se à vontade para aprender com o código e adaptar conforme necessário.
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
