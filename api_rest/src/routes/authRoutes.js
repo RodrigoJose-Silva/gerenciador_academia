@@ -40,18 +40,20 @@ const validateLogin = (req, res, next) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - userName
- *               - senha
- *             properties:
- *               userName:
- *                 type: string
- *               senha:
- *                 type: string
+ *             $ref: '#/components/schemas/Login'
  *     responses:
  *       200:
  *         description: Login realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT para autenticação
+ *                 funcionario:
+ *                   $ref: '#/components/schemas/Funcionario'
  *       401:
  *         description: Credenciais inválidas
  *       403:

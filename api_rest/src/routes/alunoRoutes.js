@@ -21,60 +21,7 @@ const { PERMISSOES } = require('../models/Permissions');
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - nomeCompleto
- *               - email
- *               - telefone
- *               - dataNascimento
- *               - endereco
- *             properties:
- *               nomeCompleto:
- *                 type: string
- *                 maxLength: 250
- *               email:
- *                 type: string
- *                 maxLength: 150
- *               telefone:
- *                 type: string
- *                 maxLength: 11
- *               dataNascimento:
- *                 type: string
- *                 format: date
- *               cpf:
- *                 type: string
- *                 maxLength: 11
- *               planoId:
- *                 type: string
- *               dataInicio:
- *                 type: string
- *                 format: date
- *               endereco:
- *                 type: object
- *                 required:
- *                   - rua
- *                   - numero
- *                   - cidade
- *                   - estado
- *                   - cep
- *                 properties:
- *                   rua:
- *                     type: string
- *                   numero:
- *                     type: string
- *                   complemento:
- *                     type: string
- *                   bairro:
- *                     type: string
- *                   cidade:
- *                     type: string
- *                   estado:
- *                     type: string
- *                     maxLength: 2
- *                   cep:
- *                     type: string
- *               informacoesMedicas:
- *                 type: string
+ *             $ref: '#/components/schemas/Aluno'
  *     responses:
  *       201:
  *         description: Aluno cadastrado com sucesso
@@ -97,6 +44,12 @@ router.post('/', autenticar, verificarPermissao(PERMISSOES.CRIAR_ALUNO), alunoVa
  *     responses:
  *       200:
  *         description: Lista de alunos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Aluno'
  *       401:
  *         description: Não autenticado
  *       403:
@@ -122,6 +75,10 @@ router.get('/', autenticar, verificarPermissao(PERMISSOES.LISTAR_ALUNOS), alunoC
  *     responses:
  *       200:
  *         description: Dados do aluno
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Aluno'
  *       401:
  *         description: Não autenticado
  *       403:
@@ -131,5 +88,69 @@ router.get('/', autenticar, verificarPermissao(PERMISSOES.LISTAR_ALUNOS), alunoC
  */
 // GET /api/alunos/:id - Buscar aluno por ID (requer: VISUALIZAR_ALUNO)
 router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_ALUNO), alunoController.buscarAlunoPorId);
+
+/**
+ * @swagger
+ * /api/alunos/{id}:
+ *   put:
+ *     summary: Atualiza um aluno existente
+ *     tags: [Alunos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Aluno'
+ *     responses:
+ *       200:
+ *         description: Aluno atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Aluno'
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Sem permissão
+ *       404:
+ *         description: Aluno não encontrado
+ */
+// PUT /api/alunos/:id - Atualizar aluno (requer: EDITAR_ALUNO)
+router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_ALUNO), alunoController.atualizarAluno);
+
+/**
+ * @swagger
+ * /api/alunos/{id}:
+ *   delete:
+ *     summary: Deleta um aluno
+ *     tags: [Alunos]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Aluno deletado com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Sem permissão
+ *       404:
+ *         description: Aluno não encontrado
+ */
+// DELETE /api/alunos/:id - Deletar aluno (requer: EXCLUIR_ALUNO)
+router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_ALUNO), alunoController.deletarAluno);
 
 module.exports = router;

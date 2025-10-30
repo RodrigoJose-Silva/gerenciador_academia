@@ -96,8 +96,79 @@ const buscarFuncionarioPorId = (req, res) => {
     }
 };
 
+/**
+ * Atualiza um funcionário existente
+ */
+const atualizarFuncionario = async (req, res) => {
+    try {
+        const funcionario = storageService.buscarFuncionarioPorId(req.params.id);
+
+        if (!funcionario) {
+            return res.status(404).json({
+                message: 'Funcionário não encontrado'
+            });
+        }
+
+        // Atualiza os campos fornecidos
+        if (req.body.nomeCompleto) funcionario.nomeCompleto = req.body.nomeCompleto;
+        if (req.body.telefone) funcionario.telefone = req.body.telefone;
+        if (req.body.dataNascimento) funcionario.dataNascimento = req.body.dataNascimento;
+        if (req.body.cpf) funcionario.cpf = req.body.cpf;
+        if (req.body.cargo) funcionario.cargo = req.body.cargo;
+        if (req.body.perfil) funcionario.perfil = req.body.perfil;
+        if (req.body.dataAdmissao) funcionario.dataAdmissao = req.body.dataAdmissao;
+        if (req.body.cref) funcionario.cref = req.body.cref;
+        if (req.body.salario) funcionario.salario = req.body.salario;
+
+        // Se a senha foi fornecida, faz o hash
+        if (req.body.senha) {
+            funcionario.senha = await bcrypt.hash(req.body.senha, 10);
+        }
+
+        res.status(200).json({
+            message: 'Funcionário atualizado com sucesso',
+            funcionario: funcionario.toJSON()
+        });
+    } catch (error) {
+        console.error('Erro ao atualizar funcionário:', error);
+        res.status(500).json({
+            message: 'Erro ao atualizar funcionário',
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Deleta um funcionário
+ */
+const deletarFuncionario = (req, res) => {
+    try {
+        const funcionario = storageService.buscarFuncionarioPorId(req.params.id);
+
+        if (!funcionario) {
+            return res.status(404).json({
+                message: 'Funcionário não encontrado'
+            });
+        }
+
+        storageService.deletarFuncionario(req.params.id);
+
+        res.status(200).json({
+            message: 'Funcionário deletado com sucesso'
+        });
+    } catch (error) {
+        console.error('Erro ao deletar funcionário:', error);
+        res.status(500).json({
+            message: 'Erro ao deletar funcionário',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     cadastrarFuncionario,
     listarFuncionarios,
-    buscarFuncionarioPorId
+    buscarFuncionarioPorId,
+    atualizarFuncionario,
+    deletarFuncionario
 };

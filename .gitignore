@@ -1,1 +1,4 @@
 artfacts/
+api_rest/node_modules/
+api_rest/coverage/
+LICENSE

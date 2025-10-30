@@ -21,49 +21,7 @@ const { PERMISSOES } = require('../models/Permissions');
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - nomeCompleto
- *               - email
- *               - userName
- *               - senha
- *               - telefone
- *               - dataNascimento
- *               - cargo
- *               - salario
- *             properties:
- *               nomeCompleto:
- *                 type: string
- *                 maxLength: 250
- *               email:
- *                 type: string
- *                 maxLength: 150
- *               userName:
- *                 type: string
- *                 maxLength: 100
- *               senha:
- *                 type: string
- *                 minLength: 6
- *                 maxLength: 20
- *               telefone:
- *                 type: string
- *                 maxLength: 11
- *               dataNascimento:
- *                 type: string
- *                 format: date
- *               cpf:
- *                 type: string
- *                 maxLength: 11
- *               cargo:
- *                 type: string
- *                 maxLength: 100
- *               dataAdmissao:
- *                 type: string
- *                 format: date
- *               cref:
- *                 type: string
- *               salario:
- *                 type: number
+ *             $ref: '#/components/schemas/Funcionario'
  *     responses:
  *       201:
  *         description: Funcionário cadastrado com sucesso
@@ -86,6 +44,12 @@ router.post('/', autenticar, verificarPermissao(PERMISSOES.CRIAR_FUNCIONARIO), f
  *     responses:
  *       200:
  *         description: Lista de funcionários
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Funcionario'
  *       401:
  *         description: Não autenticado
  *       403:
@@ -111,6 +75,10 @@ router.get('/', autenticar, verificarPermissao(PERMISSOES.LISTAR_FUNCIONARIOS), 
  *     responses:
  *       200:
  *         description: Dados do funcionário
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Funcionario'
  *       401:
  *         description: Não autenticado
  *       403:
@@ -120,5 +88,69 @@ router.get('/', autenticar, verificarPermissao(PERMISSOES.LISTAR_FUNCIONARIOS), 
  */
 // GET /api/funcionarios/:id - Buscar funcionário por ID (requer: VISUALIZAR_FUNCIONARIO)
 router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_FUNCIONARIO), funcionarioController.buscarFuncionarioPorId);
+
+/**
+ * @swagger
+ * /api/funcionarios/{id}:
+ *   put:
+ *     summary: Atualiza um funcionário existente
+ *     tags: [Funcionários]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Funcionario'
+ *     responses:
+ *       200:
+ *         description: Funcionário atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Funcionario'
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Sem permissão
+ *       404:
+ *         description: Funcionário não encontrado
+ */
+// PUT /api/funcionarios/:id - Atualizar funcionário (requer: EDITAR_FUNCIONARIO)
+router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_FUNCIONARIO), funcionarioController.atualizarFuncionario);
+
+/**
+ * @swagger
+ * /api/funcionarios/{id}:
+ *   delete:
+ *     summary: Deleta um funcionário
+ *     tags: [Funcionários]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Funcionário deletado com sucesso
+ *       401:
+ *         description: Não autenticado
+ *       403:
+ *         description: Sem permissão
+ *       404:
+ *         description: Funcionário não encontrado
+ */
+// DELETE /api/funcionarios/:id - Deletar funcionário (requer: EXCLUIR_FUNCIONARIO)
+router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_FUNCIONARIO), funcionarioController.deletarFuncionario);
 
 module.exports = router;
