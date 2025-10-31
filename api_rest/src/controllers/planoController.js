@@ -20,12 +20,16 @@ const criarPlano = (req, res) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        // Cria um novo plano com os dados da requisição
-        const novoPlano = new Plano(req.body);
-        
+        // Remove o ID do corpo da requisição para garantir que seja gerado automaticamente
+        const dadosPlano = { ...req.body };
+        delete dadosPlano.id;
+
+        // Cria um novo plano com os dados filtrados
+        const novoPlano = new Plano(dadosPlano);
+
         // Salva o plano no serviço de armazenamento
         const planoSalvo = storageService.adicionarPlano(novoPlano);
-        
+
         return res.status(201).json({
             message: 'Plano criado com sucesso',
             plano: planoSalvo.toJSON()
@@ -47,7 +51,7 @@ const listarPlanos = (req, res) => {
     try {
         // Obtém todos os planos do serviço de armazenamento
         const planos = storageService.listarPlanos();
-        
+
         return res.status(200).json({
             planos: planos
         });
@@ -67,16 +71,16 @@ const listarPlanos = (req, res) => {
 const buscarPlanoPorId = (req, res) => {
     try {
         const { id } = req.params;
-        
+
         // Busca o plano no serviço de armazenamento
         const plano = storageService.buscarPlanoPorId(id);
-        
+
         if (!plano) {
             return res.status(404).json({
                 message: 'Plano não encontrado'
             });
         }
-        
+
         return res.status(200).json({
             plano: plano
         });
@@ -100,9 +104,9 @@ const atualizarPlano = (req, res) => {
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        
+
         const { id } = req.params;
-        
+
         // Verifica se o plano existe
         const planoExistente = storageService.buscarPlanoPorId(id);
         if (!planoExistente) {
@@ -110,17 +114,17 @@ const atualizarPlano = (req, res) => {
                 message: 'Plano não encontrado'
             });
         }
-        
+
         // Cria um novo objeto com os dados atualizados
         const dadosAtualizados = {
             ...planoExistente,
             ...req.body,
             id // Garante que o ID não seja alterado
         };
-        
+
         // Atualiza o plano no serviço de armazenamento
         const planoAtualizado = storageService.atualizarPlano(id, new Plano(dadosAtualizados));
-        
+
         return res.status(200).json({
             message: 'Plano atualizado com sucesso',
             plano: planoAtualizado
@@ -141,7 +145,7 @@ const atualizarPlano = (req, res) => {
 const excluirPlano = (req, res) => {
     try {
         const { id } = req.params;
-        
+
         // Verifica se o plano existe
         const planoExistente = storageService.buscarPlanoPorId(id);
         if (!planoExistente) {
@@ -149,10 +153,10 @@ const excluirPlano = (req, res) => {
                 message: 'Plano não encontrado'
             });
         }
-        
+
         // Exclui o plano do serviço de armazenamento
         storageService.deletarPlano(id);
-        
+
         return res.status(200).json({
             message: 'Plano excluído com sucesso'
         });

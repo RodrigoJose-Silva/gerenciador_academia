@@ -26,12 +26,16 @@ const cadastrarFuncionario = async (req, res) => {
             });
         }
 
+        // Remove o ID do corpo da requisição para garantir que seja gerado automaticamente
+        const dadosFuncionario = { ...req.body };
+        delete dadosFuncionario.id;
+
         // Hash da senha
-        const senhaHash = await bcrypt.hash(req.body.senha, 10);
+        const senhaHash = await bcrypt.hash(dadosFuncionario.senha, 10);
 
         // Cria o funcionário com senha hash
         const funcionarioData = {
-            ...req.body,
+            ...dadosFuncionario,
             senha: senhaHash
         };
 

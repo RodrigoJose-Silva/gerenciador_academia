@@ -21,7 +21,7 @@ const registrarCheckin = (req, res) => {
         }
 
         const { alunoId } = req.body;
-        
+
         // Verifica se o aluno existe
         const aluno = storageService.buscarAlunoPorId(alunoId);
         if (!aluno) {
@@ -29,22 +29,24 @@ const registrarCheckin = (req, res) => {
                 message: 'Aluno não encontrado'
             });
         }
-        
-        // Adiciona o ID do funcionário que está registrando o checkin (se autenticado)
+
+        // Remove o ID do corpo da requisição e prepara os dados do checkin
         const dadosCheckin = {
             ...req.body
         };
-        
+        delete dadosCheckin.id;
+
+        // Adiciona o ID do funcionário que está registrando o checkin (se autenticado)
         if (req.user) {
             dadosCheckin.registradoPor = req.user.id;
         }
-        
+
         // Cria um novo checkin
         const novoCheckin = new Checkin(dadosCheckin);
-        
+
         // Salva o checkin no serviço de armazenamento
         const checkinSalvo = storageService.adicionarCheckin(novoCheckin);
-        
+
         return res.status(201).json({
             message: 'Checkin registrado com sucesso',
             checkin: checkinSalvo.toJSON()
@@ -66,7 +68,7 @@ const listarCheckins = (req, res) => {
     try {
         // Obtém todos os checkins do serviço de armazenamento
         const checkins = storageService.listarCheckins();
-        
+
         return res.status(200).json({
             checkins: checkins
         });
@@ -86,16 +88,16 @@ const listarCheckins = (req, res) => {
 const buscarCheckinPorId = (req, res) => {
     try {
         const { id } = req.params;
-        
+
         // Busca o checkin no serviço de armazenamento
         const checkin = storageService.buscarCheckinPorId(id);
-        
+
         if (!checkin) {
             return res.status(404).json({
                 message: 'Checkin não encontrado'
             });
         }
-        
+
         return res.status(200).json({
             checkin: checkin
         });
@@ -115,7 +117,7 @@ const buscarCheckinPorId = (req, res) => {
 const listarCheckinsPorAluno = (req, res) => {
     try {
         const { alunoId } = req.params;
-        
+
         // Verifica se o aluno existe
         const aluno = storageService.buscarAlunoPorId(alunoId);
         if (!aluno) {
@@ -123,10 +125,10 @@ const listarCheckinsPorAluno = (req, res) => {
                 message: 'Aluno não encontrado'
             });
         }
-        
+
         // Busca os checkins do aluno
         const checkins = storageService.listarCheckinsPorAluno(alunoId);
-        
+
         return res.status(200).json({
             aluno: aluno.toJSON(),
             checkins: checkins
@@ -147,7 +149,7 @@ const listarCheckinsPorAluno = (req, res) => {
 const excluirCheckin = (req, res) => {
     try {
         const { id } = req.params;
-        
+
         // Verifica se o checkin existe
         const checkinExistente = storageService.buscarCheckinPorId(id);
         if (!checkinExistente) {
@@ -155,10 +157,10 @@ const excluirCheckin = (req, res) => {
                 message: 'Checkin não encontrado'
             });
         }
-        
+
         // Exclui o checkin do serviço de armazenamento
         storageService.deletarCheckin(id);
-        
+
         return res.status(200).json({
             message: 'Checkin excluído com sucesso'
         });
