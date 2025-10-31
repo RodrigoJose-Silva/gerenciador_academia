@@ -271,10 +271,7 @@ Cadastra um novo funcionário.
 **Resposta (201):**
 ```json
 {
-  "message": "Funcionário cadastrado com sucesso",
-  "id": "123456789",
-  "nomeCompleto": "Beatriz Martins",
-  "userName": "beatriz_martins"
+  "id": "123456789"
 }
 ```
 
@@ -285,29 +282,44 @@ Lista todos os funcionários cadastrados.
 Busca um funcionário específico por ID.
 
 #### PUT /api/funcionarios/:id
-Atualiza um funcionário existente.
+Atualiza dados específicos de um funcionário existente.
 
 **Body (campos opcionais):**
 ```json
 {
-  "nomeCompleto": "Beatriz Martins Atualizado",
-  "telefone": "11912345678",
-  "cargo": "Coordenador",
-  "perfil": "GERENTE",
-  "salario": 4500.00
+  "email": "felizberto@email.com",
+  "telefone": "11111111111",
+  "cargo": "Adminstrador",
+  "perfil": "ADMINISTRADOR",
+  "salario": 12300
 }
 ```
+
+> **Notas importantes para atualização:**
+> - Todos os campos são opcionais
+> - Pelo menos um campo deve ser fornecido com valor válido
+> - Campos em branco, nulos ou não enviados mantêm o valor existente
+> - Email é validado para evitar duplicidade
+> - Campos não listados acima não serão aceitos na atualização
 
 **Resposta (200):**
 ```json
 {
-  "message": "Funcionário atualizado com sucesso",
-  "funcionario": {
-    "id": "123456789",
-    "nomeCompleto": "Beatriz Martins Atualizado",
-    "userName": "beatriz_martins",
-    "perfil": "GERENTE"
-  }
+  "message": "Cadastro atualizado com sucesso"
+}
+```
+
+**Resposta (400) - Nenhum campo válido:**
+```json
+{
+  "message": "Pelo menos um campo válido deve ser fornecido para atualização"
+}
+```
+
+**Resposta (400) - Campo inválido:**
+```json
+{
+  "message": "Campos não permitidos na atualização: nomeCompleto, senha"
 }
 ```
 

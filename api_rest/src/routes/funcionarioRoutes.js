@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const funcionarioController = require('../controllers/funcionarioController');
 const { funcionarioValidators, validate } = require('../validators/funcionarioValidators');
+const { funcionarioUpdateValidators } = require('../validators/funcionarioUpdateValidators');
 const { autenticar, verificarPermissao } = require('../middlewares/authMiddleware');
 const { PERMISSOES } = require('../models/Permissions');
 
@@ -25,6 +26,14 @@ const { PERMISSOES } = require('../models/Permissions');
  *     responses:
  *       201:
  *         description: Funcionário cadastrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: ID do funcionário cadastrado
  *       400:
  *         description: Erro de validação
  *       409:
@@ -93,7 +102,7 @@ router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_FUNCIONA
  * @swagger
  * /api/funcionarios/{id}:
  *   put:
- *     summary: Atualiza um funcionário existente
+ *     summary: Atualiza dados de um funcionário existente
  *     tags: [Funcionários]
  *     security:
  *       - bearerAuth: []
@@ -108,23 +117,52 @@ router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_FUNCIONA
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Funcionario'
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Novo email do funcionário
+ *               telefone:
+ *                 type: string
+ *                 pattern: ^\d{11}$
+ *                 description: Novo telefone do funcionário (apenas números)
+ *               cargo:
+ *                 type: string
+ *                 maxLength: 100
+ *                 description: Novo cargo do funcionário
+ *               perfil:
+ *                 type: string
+ *                 enum: [ADMINISTRADOR, GERENTE, INSTRUTOR, RECEPCIONISTA]
+ *                 description: Novo perfil de acesso do funcionário
+ *               salario:
+ *                 type: number
+ *                 minimum: 0
+ *                 description: Novo salário do funcionário
  *     responses:
  *       200:
- *         description: Funcionário atualizado com sucesso
+ *         description: Cadastro atualizado com sucesso
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Funcionario'
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Cadastro atualizado com sucesso
+ *       400:
+ *         description: Erro de validação ou campos inválidos
  *       401:
  *         description: Não autenticado
  *       403:
  *         description: Sem permissão
  *       404:
  *         description: Funcionário não encontrado
+ *       409:
+ *         description: Email já cadastrado para outro funcionário
  */
 // PUT /api/funcionarios/:id - Atualizar funcionário (requer: EDITAR_FUNCIONARIO)
-router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_FUNCIONARIO), funcionarioController.atualizarFuncionario);
+router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_FUNCIONARIO), funcionarioUpdateValidators, validate, funcionarioController.atualizarFuncionario);
 
 /**
  * @swagger
