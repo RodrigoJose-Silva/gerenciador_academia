@@ -1,0 +1,13 @@
+{
+    "nomeCompleto": "Ana Silva",
+    "email": "ana.silva@academia.com",
+    "userName": "ana_silva",
+    "senha": "Senha@Forte123",
+    "telefone": "11912345679",
+    "dataNascimento": "1992-03-20",
+    "cpf": "12345678900",
+    "cargo": "Recepcionista",
+    "dataAdmissao": "2025-01-15",
+    "cref": null,
+    "salario": 2800.00
+}
