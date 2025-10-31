@@ -76,6 +76,24 @@ describe('POST /api/funcionarios - Cadastro de Funcionário', () => {
         expect(response.status).toBe(400);
     });
 
+    test('Cadastrar funcionário sem CREF deve retornar 201', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioSemCrefDeveRetornar201.json'), 'utf8')
+        );
+
+        const response = await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty('id');
+        expect(response.body).toHaveProperty('userName');
+        expect(response.body.message).toBe('Funcionário cadastrado com sucesso');
+    });
+
     test('Cadastrar funcionário com email duplicado deve retornar 409', async () => {
         const token = gerarTokenParaTeste('ADMINISTRADOR');
 

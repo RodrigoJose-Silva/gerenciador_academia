@@ -76,10 +76,10 @@ const funcionarioValidators = [
         .optional()
         .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Data de admissão deve estar no formato AAAA-MM-DD'),
 
-    // CREF (opcional)
+    // CREF (opcional, pode ser null)
     body('cref')
-        .optional()
-        .isString().withMessage('CREF deve ser uma string'),
+        .optional({ nullable: true })
+        .isString().withMessage('CREF deve ser uma string quando fornecido'),
 
     // Salário
     body('salario')
