@@ -1,6 +1,10 @@
 /**
  * Rotas de Autenticação
  * Define os endpoints para login de funcionários
+ * 
+ * Nota: O endpoint de login não requer autenticação prévia,
+ * pois é responsável por gerar o token JWT que será usado
+ * para autenticar as demais requisições.
  */
 
 const express = require('express');

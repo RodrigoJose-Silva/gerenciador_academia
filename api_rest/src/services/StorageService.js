@@ -3,12 +3,34 @@
  * Gerencia o armazenamento em memória de alunos e funcionários (mock)
  */
 
+const { getDefaultAdminWithHashedPassword } = require('../config/adminDefaults');
+const Funcionario = require('../models/Funcionario');
+
 class StorageService {
     constructor() {
         this.alunos = [];
         this.funcionarios = [];
         this.planos = [];
         this.checkins = [];
+        this.initializeDefaultAdmin();
+    }
+
+    /**
+     * Inicializa o administrador padrão do sistema
+     */
+    async initializeDefaultAdmin() {
+        try {
+            const adminData = await getDefaultAdminWithHashedPassword();
+            const adminExists = this.buscarFuncionarioPorUserName(adminData.userName);
+
+            if (!adminExists) {
+                const adminFuncionario = new Funcionario(adminData);
+                this.adicionarFuncionario(adminFuncionario);
+                console.log('Administrador padrão criado com sucesso');
+            }
+        } catch (error) {
+            console.error('Erro ao criar administrador padrão:', error);
+        }
     }
 
     // Métodos para Alunos
