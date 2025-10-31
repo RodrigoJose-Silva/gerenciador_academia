@@ -126,6 +126,17 @@ api_rest/
 - Node.js (versão 14 ou superior)
 - npm (geralmente vem com o Node.js)
 
+### Credenciais de Administrador Padrão
+
+O sistema é inicializado com um usuário administrador padrão para gerenciamento inicial:
+
+- **Username**: admin
+- **Senha**: admin@123
+- **Email**: admin@academia.com
+- **Perfil**: ADMINISTRADOR
+
+> **IMPORTANTE**: Por segurança, recomenda-se alterar a senha do administrador após o primeiro acesso.
+
 ### Passos
 
 1. Clone o repositório e navegue até a pasta:
@@ -510,8 +521,8 @@ O projeto possui **testes** cobrindo todas as funcionalidades da API:
 - Testes de validação de permissões por perfil
 
 **Tipos de Teste:**
-- **Teste de Sentença**: Valida que cada linha de código é executada
-- **Teste de Decisão**: Valida que todos os caminhos lógicos são testados (if/else, loops, etc.)
+- **Teste de Instrução**: Valida que cada linha de código é executada
+- **Teste de Fluxo**: Valida que todos os caminhos lógicos são testados (if/else, loops, etc.)
 
 Os testes estão isolados usando **MOCK**, garantindo que cada teste seja independente e possa ser executado isoladamente.
 
