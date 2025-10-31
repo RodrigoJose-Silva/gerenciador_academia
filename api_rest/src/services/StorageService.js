@@ -1,10 +1,16 @@
 /**
  * Serviço de Armazenamento
- * Gerencia o armazenamento em memória de alunos e funcionários (mock)
+ * Gerencia o armazenamento em memória de alunos, funcionários, planos e checkins (mock)
  * 
  * O serviço é responsável pela geração automática de IDs únicos para cada entidade.
  * Os IDs são números inteiros incrementais, começando em 1 para cada tipo de entidade.
  * IDs são atribuídos automaticamente no momento da criação do registro.
+ * 
+ * Tratamento de IDs:
+ * - IDs são armazenados internamente como números (Number)
+ * - Ao receber um ID para busca, o serviço converte automaticamente para número
+ * - Isso garante a correta comparação independente do tipo do ID recebido (string ou number)
+ * - A conversão é feita usando Number(id) em todos os métodos de busca
  */
 
 const { getDefaultAdminWithHashedPassword } = require('../config/adminDefaults');
@@ -50,8 +56,15 @@ class StorageService {
         return aluno;
     }
 
+    /**
+     * Busca um aluno pelo ID
+     * @param {string|number} id - ID do aluno para busca
+     * @returns {Object|null} Aluno encontrado ou null se não existir
+     */
     buscarAlunoPorId(id) {
-        return this.alunos.find(aluno => aluno.id === id);
+        // Converte o ID para número para garantir a comparação correta
+        const numericId = Number(id);
+        return this.alunos.find(aluno => aluno.id === numericId);
     }
 
     buscarAlunoPorEmail(email) {
@@ -88,8 +101,15 @@ class StorageService {
         return funcionario;
     }
 
+    /**
+     * Busca um funcionário pelo ID
+     * @param {string|number} id - ID do funcionário para busca
+     * @returns {Object|null} Funcionário encontrado ou null se não existir
+     */
     buscarFuncionarioPorId(id) {
-        return this.funcionarios.find(funcionario => funcionario.id === id);
+        // Converte o ID para número para garantir a comparação correta
+        const numericId = Number(id);
+        return this.funcionarios.find(funcionario => funcionario.id === numericId);
     }
 
     buscarFuncionarioPorEmail(email) {
@@ -139,8 +159,15 @@ class StorageService {
         return plano;
     }
 
+    /**
+     * Busca um plano pelo ID
+     * @param {string|number} id - ID do plano para busca
+     * @returns {Object|null} Plano encontrado ou null se não existir
+     */
     buscarPlanoPorId(id) {
-        return this.planos.find(plano => plano.id === id);
+        // Converte o ID para número para garantir a comparação correta
+        const numericId = Number(id);
+        return this.planos.find(plano => plano.id === numericId);
     }
 
     listarPlanos() {
@@ -175,8 +202,15 @@ class StorageService {
         return checkin;
     }
 
+    /**
+     * Busca um checkin pelo ID
+     * @param {string|number} id - ID do checkin para busca
+     * @returns {Object|null} Checkin encontrado ou null se não existir
+     */
     buscarCheckinPorId(id) {
-        return this.checkins.find(checkin => checkin.id === id);
+        // Converte o ID para número para garantir a comparação correta
+        const numericId = Number(id);
+        return this.checkins.find(checkin => checkin.id === numericId);
     }
 
     listarCheckins() {
