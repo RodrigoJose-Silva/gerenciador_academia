@@ -1,6 +1,16 @@
 /**
  * Modelo de Funcionário
  * Define a estrutura de dados para cadastro de funcionários
+ * 
+ * Este modelo representa um funcionário da academia e contém todos os campos
+ * necessários para o seu cadastro e gerenciamento, incluindo:
+ * - Dados pessoais (nome, email, telefone, etc.)
+ * - Dados profissionais (cargo, salário, CREF)
+ * - Dados de acesso (userName, senha, perfil)
+ * - Dados de controle (tentativas de login, bloqueio)
+ * 
+ * O CREF (Registro do Profissional de Educação Física) é opcional,
+ * sendo necessário apenas para funcionários que atuam como instrutores.
  */
 
 const { PERFIS } = require('./Permissions');

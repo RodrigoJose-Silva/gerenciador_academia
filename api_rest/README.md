@@ -641,7 +641,7 @@ A documentação interativa permite testar todos os endpoints diretamente pelo n
 | cargo | string | Sim | Até 100 caracteres |
 | perfil | string | Não | ADMINISTRADOR, GERENTE, INSTRUTOR ou RECEPCIONISTA (padrão: RECEPCIONISTA) |
 | dataAdmissao | string | Não | Formato "AAAA-MM-DD", default: data atual |
-| cref | string | Não | Texto livre |
+| cref | string | Não | Opcional, necessário apenas para instrutores |
 | salario | number | Sim | Float com até 10 caracteres |
 
 ### Login
@@ -691,6 +691,18 @@ A documentação interativa permite testar todos os endpoints diretamente pelo n
 ```
 
 ## 🔒 Segurança
+
+### Headers Obrigatórios
+
+Para todas as requisições protegidas, os seguintes headers são necessários:
+
+| Header | Valor | Descrição |
+|--------|-------|-----------|
+| Authorization | Bearer [token] | Token JWT obtido no login |
+| Content-Type | application/json | Tipo de conteúdo enviado |
+| Accept | application/json | Tipo de conteúdo aceito |
+
+### Características de Segurança
 
 - **Autenticação JWT**: Tokens com expiração de 24 horas
 - **Autorização baseada em perfis**: Controle de acesso granular
