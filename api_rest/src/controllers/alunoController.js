@@ -18,8 +18,12 @@ const cadastrarAluno = (req, res) => {
             });
         }
 
-        // Cria o aluno
-        const aluno = new Aluno(req.body);
+        // Remove o ID do corpo da requisição para garantir que seja gerado automaticamente
+        const dadosAluno = { ...req.body };
+        delete dadosAluno.id;
+
+        // Cria o aluno com os dados filtrados
+        const aluno = new Aluno(dadosAluno);
 
         // Adiciona ao storage
         const alunoCadastrado = storageService.adicionarAluno(aluno);

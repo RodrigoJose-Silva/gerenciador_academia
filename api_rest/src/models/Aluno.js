@@ -1,11 +1,14 @@
 /**
  * Modelo de Aluno
  * Define a estrutura de dados para cadastro de alunos
+ * 
+ * O ID do aluno é gerenciado automaticamente pelo StorageService
+ * e não deve ser fornecido durante a criação do objeto.
  */
 
 class Aluno {
     constructor(data) {
-        this.id = data.id || this.generateId();
+        this.id = null; // Será definido pelo StorageService
         this.nomeCompleto = data.nomeCompleto;
         this.email = data.email;
         this.telefone = data.telefone;
@@ -26,13 +29,6 @@ class Aluno {
         this.dataCadastro = new Date().toISOString();
         this.tentativasLogin = 0;
         this.bloqueado = false;
-    }
-
-    /**
-     * Gera um ID único para o aluno
-     */
-    generateId() {
-        return Math.random().toString(36).substr(2, 9);
     }
 
     /**

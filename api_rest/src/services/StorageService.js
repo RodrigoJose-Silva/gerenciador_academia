@@ -1,6 +1,10 @@
 /**
  * Serviço de Armazenamento
  * Gerencia o armazenamento em memória de alunos e funcionários (mock)
+ * 
+ * O serviço é responsável pela geração automática de IDs únicos para cada entidade.
+ * Os IDs são números inteiros incrementais, começando em 1 para cada tipo de entidade.
+ * IDs são atribuídos automaticamente no momento da criação do registro.
  */
 
 const { getDefaultAdminWithHashedPassword } = require('../config/adminDefaults');
@@ -12,6 +16,11 @@ class StorageService {
         this.funcionarios = [];
         this.planos = [];
         this.checkins = [];
+        // Contadores para geração automática de IDs
+        this._contadorAlunosId = 1;
+        this._contadorFuncionariosId = 1;
+        this._contadorPlanosId = 1;
+        this._contadorCheckinsId = 1;
         this.initializeDefaultAdmin();
     }
 
@@ -35,6 +44,8 @@ class StorageService {
 
     // Métodos para Alunos
     adicionarAluno(aluno) {
+        // Gera ID automático
+        aluno.id = this._contadorAlunosId++;
         this.alunos.push(aluno);
         return aluno;
     }
@@ -71,6 +82,8 @@ class StorageService {
 
     // Métodos para Funcionários
     adicionarFuncionario(funcionario) {
+        // Gera ID automático
+        funcionario.id = this._contadorFuncionariosId++;
         this.funcionarios.push(funcionario);
         return funcionario;
     }
@@ -120,6 +133,8 @@ class StorageService {
 
     // Métodos para Planos
     adicionarPlano(plano) {
+        // Gera ID automático
+        plano.id = this._contadorPlanosId++;
         this.planos.push(plano);
         return plano;
     }
@@ -154,6 +169,8 @@ class StorageService {
 
     // Métodos para Checkins
     adicionarCheckin(checkin) {
+        // Gera ID automático
+        checkin.id = this._contadorCheckinsId++;
         this.checkins.push(checkin);
         return checkin;
     }
