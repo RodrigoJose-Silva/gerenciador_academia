@@ -190,7 +190,8 @@ const swaggerOptions = {
                         },
                         cref: {
                             type: 'string',
-                            description: 'Número do CREF (para instrutores)'
+                            description: 'Número do CREF (opcional, para instrutores)',
+                            nullable: true
                         },
                         salario: {
                             type: 'number',
@@ -322,7 +323,39 @@ const swaggerOptions = {
             {
                 bearerAuth: []
             }
-        ]
+        ],
+        parameters: {
+            authHeader: {
+                name: 'Authorization',
+                in: 'header',
+                description: 'Token JWT no formato: Bearer <token>',
+                required: true,
+                schema: {
+                    type: 'string',
+                    example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...'
+                }
+            },
+            contentType: {
+                name: 'Content-Type',
+                in: 'header',
+                description: 'Tipo de conteúdo da requisição',
+                required: true,
+                schema: {
+                    type: 'string',
+                    default: 'application/json'
+                }
+            },
+            accept: {
+                name: 'Accept',
+                in: 'header',
+                description: 'Tipo de conteúdo aceito na resposta',
+                required: true,
+                schema: {
+                    type: 'string',
+                    default: 'application/json'
+                }
+            }
+        }
     },
     apis: ['./src/routes/*.js'],
 };

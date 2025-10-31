@@ -117,7 +117,6 @@ const atualizarFuncionario = async (req, res) => {
         if (req.body.cargo) funcionario.cargo = req.body.cargo;
         if (req.body.perfil) funcionario.perfil = req.body.perfil;
         if (req.body.dataAdmissao) funcionario.dataAdmissao = req.body.dataAdmissao;
-        if (req.body.cref) funcionario.cref = req.body.cref;
         if (req.body.salario) funcionario.salario = req.body.salario;
 
         // Se a senha foi fornecida, faz o hash
