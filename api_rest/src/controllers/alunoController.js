@@ -28,18 +28,14 @@ const cadastrarAluno = (req, res) => {
         // Adiciona ao storage
         const alunoCadastrado = storageService.adicionarAluno(aluno);
 
-        // Retorna apenas o ID e dados públicos
+        // Retorna apenas o ID do novo registro
         res.status(201).json({
-            message: 'Aluno cadastrado com sucesso',
-            id: alunoCadastrado.id,
-            nomeCompleto: alunoCadastrado.nomeCompleto,
-            email: alunoCadastrado.email
+            id: alunoCadastrado.id
         });
     } catch (error) {
         console.error('Erro ao cadastrar aluno:', error);
         res.status(500).json({
-            message: 'Erro ao cadastrar aluno',
-            error: error.message
+            message: 'Erro ao cadastrar aluno: ' + error.message
         });
     }
 };
@@ -54,8 +50,7 @@ const listarAlunos = (req, res) => {
     } catch (error) {
         console.error('Erro ao listar alunos:', error);
         res.status(500).json({
-            message: 'Erro ao listar alunos',
-            error: error.message
+            message: 'Erro ao listar alunos: ' + error.message
         });
     }
 };
@@ -77,8 +72,7 @@ const buscarAlunoPorId = (req, res) => {
     } catch (error) {
         console.error('Erro ao buscar aluno:', error);
         res.status(500).json({
-            message: 'Erro ao buscar aluno',
-            error: error.message
+            message: 'Erro ao buscar aluno: ' + error.message
         });
     }
 };

@@ -7,15 +7,26 @@
  */
 
 class Aluno {
+    /**
+     * Formata uma data para o padrão AAAA-MM-DD
+     * @param {Date|string} data - Data a ser formatada
+     * @returns {string} Data formatada no padrão AAAA-MM-DD
+     */
+    formatarData(data) {
+        if (!data) return null;
+        const dataObj = data instanceof Date ? data : new Date(data);
+        if (isNaN(dataObj.getTime())) return null;
+        return dataObj.toISOString().split('T')[0];
+    }
     constructor(data) {
         this.id = null; // Será definido pelo StorageService
         this.nomeCompleto = data.nomeCompleto;
         this.email = data.email;
         this.telefone = data.telefone;
-        this.dataNascimento = data.dataNascimento;
+        this.dataNascimento = this.formatarData(data.dataNascimento);
         this.cpf = data.cpf || null;
         this.planoId = data.planoId || 'MUSCULAÇÃO';
-        this.dataInicio = data.dataInicio || new Date().toISOString().split('T')[0];
+        this.dataInicio = this.formatarData(data.dataInicio) || this.formatarData(new Date());
         this.endereco = {
             rua: data.endereco.rua,
             numero: data.endereco.numero,
@@ -26,7 +37,7 @@ class Aluno {
             cep: data.endereco.cep
         };
         this.informacoesMedicas = data.informacoesMedicas || null;
-        this.dataCadastro = new Date().toISOString();
+        this.dataCadastro = this.formatarData(new Date());
         this.tentativasLogin = 0;
         this.bloqueado = false;
     }

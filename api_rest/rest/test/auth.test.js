@@ -39,9 +39,10 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
             .send(dadosLogin);
 
         expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('funcionario');
         expect(response.body).toHaveProperty('token');
         expect(response.body.message).toBe('Login realizado com sucesso');
+        // Não deve mais retornar dados do funcionário
+        expect(response.body).not.toHaveProperty('funcionario');
     });
 
     test('Login com usuário inexistente deve retornar 401', async () => {
