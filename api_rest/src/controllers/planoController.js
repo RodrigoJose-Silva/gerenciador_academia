@@ -139,6 +139,14 @@ const buscarPlanoPorId = (req, res) => {
 
 /**
  * Atualiza um plano existente
+ * 
+ * @description
+ * Realiza a atualização parcial ou completa de um plano existente.
+ * - Requer pelo menos uma propriedade válida para atualização
+ * - Propriedades não informadas mantêm seus valores originais
+ * - Valores nulos ou em branco são ignorados
+ * - ID do plano não pode ser alterado
+ * 
  * @param {Request} req - Objeto de requisição
  * @param {Response} res - Objeto de resposta
  */
@@ -160,10 +168,22 @@ const atualizarPlano = (req, res) => {
             });
         }
 
+        // Filtra as propriedades válidas do body
+        const dadosParaAtualizar = Object.entries(req.body)
+            .filter(([_, value]) => value !== null && value !== undefined && value !== '')
+            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+
+        // Verifica se há propriedades válidas para atualizar
+        if (Object.keys(dadosParaAtualizar).length === 0) {
+            return res.status(400).json({
+                message: 'Nenhuma propriedade válida fornecida para atualização'
+            });
+        }
+
         // Cria um novo objeto com os dados atualizados
         const dadosAtualizados = {
             ...planoExistente,
-            ...req.body,
+            ...dadosParaAtualizar,
             id // Garante que o ID não seja alterado
         };
 
