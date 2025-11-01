@@ -175,10 +175,12 @@ class StorageService {
     }
 
     atualizarPlano(id, dadosAtualizados) {
-        const index = this.planos.findIndex(plano => plano.id === id);
+        // Converte o ID para número para garantir a comparação correta
+        const numericId = Number(id);
+        const index = this.planos.findIndex(plano => plano.id === numericId);
         if (index !== -1) {
-            // Mantém o ID original
-            dadosAtualizados.id = id;
+            // Mantém o ID original como número
+            dadosAtualizados.id = numericId;
             this.planos[index] = dadosAtualizados;
             return this.planos[index];
         }
