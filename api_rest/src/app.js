@@ -290,6 +290,11 @@ const swaggerOptions = {
                 Error: {
                     type: 'object',
                     properties: {
+                        success: {
+                            type: 'boolean',
+                            default: false,
+                            description: 'Indica se a operação foi bem-sucedida'
+                        },
                         message: {
                             type: 'string',
                             description: 'Mensagem de erro'
@@ -314,6 +319,52 @@ const swaggerOptions = {
                                 }
                             },
                             description: 'Lista de erros de validação'
+                        }
+                    }
+                },
+                SuccessResponse: {
+                    type: 'object',
+                    properties: {
+                        success: {
+                            type: 'boolean',
+                            default: true,
+                            description: 'Indica se a operação foi bem-sucedida'
+                        },
+                        message: {
+                            type: 'string',
+                            description: 'Mensagem de sucesso'
+                        },
+                        data: {
+                            type: 'object',
+                            description: 'Dados retornados pela operação'
+                        }
+                    }
+                },
+                LoginResponse: {
+                    type: 'object',
+                    properties: {
+                        success: {
+                            type: 'boolean',
+                            default: true,
+                            description: 'Indica se o login foi bem-sucedido'
+                        },
+                        message: {
+                            type: 'string',
+                            description: 'Mensagem de sucesso'
+                        },
+                        data: {
+                            type: 'object',
+                            properties: {
+                                token: {
+                                    type: 'string',
+                                    description: 'Token JWT de autenticação'
+                                },
+                                funcionario: {
+                                    type: 'object',
+                                    description: 'Dados do funcionário autenticado',
+                                    $ref: '#/components/schemas/Funcionario'
+                                }
+                            }
                         }
                     }
                 }
