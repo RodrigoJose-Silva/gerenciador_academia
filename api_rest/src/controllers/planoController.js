@@ -226,8 +226,7 @@ const atualizarPlano = (req, res) => {
         const planoAtualizado = storageService.atualizarPlano(id, new Plano(dadosAtualizados));
 
         return res.status(200).json({
-            message: 'Plano atualizado com sucesso',
-            plano: planoAtualizado
+            message: 'Plano atualizado com sucesso'
         });
     } catch (error) {
         return res.status(500).json({
