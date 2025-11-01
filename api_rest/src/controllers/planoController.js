@@ -11,12 +11,15 @@
  * 
  * Características importantes:
  * - O ID do plano é gerado automaticamente pelo sistema
- * - Em caso de sucesso na criação, apenas o ID do novo plano é retornado
+ * - Campos obrigatórios: nome, modalidades, valor, duracao, beneficios
+ * - Campos opcionais: ativo
+ * - A data de cadastro é gerada automaticamente no formato AAAA-MM-DD
  * - Validações garantem a integridade dos dados do plano
  * - Controle de acesso baseado em permissões de funcionários
  * 
  * Respostas padronizadas:
  * - Sucesso em criação: Apenas ID
+ * - Sucesso em atualização: Mensagem e dados atualizados
  * - Erro de validação: Campo específico e mensagem
  * - Erro interno: Mensagem descritiva
  */
@@ -49,12 +52,10 @@ const storageService = require('../services/StorageService');
  * Exemplo de payload:
  * {
  *   "nome": "PLANO_PREMIUM",
- *   "modalidades": ["Musculação", "CrossFit", "Natação"],
+ *   "modalidades": ["Acesso completo à academia e aulas"],
  *   "valor": 150.00,
  *   "duracao": 30,
- *   "beneficios": ["Acesso ilimitado", "Aulas"],
- *   "dataInicio": "2025-11-01",
- *   "dataFim": "2025-12-01"
+ *   "beneficios": ["Acesso ilimitado", "Aulas coletivas", "Avaliação física mensal"]
  * }
  */
 const criarPlano = (req, res) => {
@@ -88,21 +89,8 @@ const criarPlano = (req, res) => {
 
 /**
  * Lista todos os planos
- * 
- * @description
- * Retorna a lista de todos os planos cadastrados no sistema.
- * Cada plano contém informações sobre modalidades, valor, duração e benefícios.
- * As datas são retornadas no formato AAAA-MM-DD.
- * 
- * @param {Request} req - Objeto de requisição Express
- * @param {Response} res - Objeto de resposta Express
- * 
- * @returns {Response}
- * Status 200: Lista de planos retornada com sucesso
- * - Retorna: { planos: Array<Plano> }
- * 
- * Status 500: Erro interno do servidor
- * - Retorna: { message: string, error: string }
+ * @param {Request} req - Objeto de requisição
+ * @param {Response} res - Objeto de resposta
  */
 const listarPlanos = (req, res) => {
     try {
@@ -122,33 +110,8 @@ const listarPlanos = (req, res) => {
 
 /**
  * Busca um plano pelo ID
- * 
- * @description
- * Busca e retorna as informações detalhadas de um plano específico.
- * O plano inclui informações sobre modalidades, valor, duração,
- * benefícios e datas no formato AAAA-MM-DD.
- * 
- * @param {Request} req - Objeto de requisição Express
- * @param {Response} res - Objeto de resposta Express
- * 
- * @returns {Response}
- * Status 200: Plano encontrado com sucesso
- * - Retorna: { plano: {
- *     id: string,
- *     nome: string,
- *     modalidades: string[],
- *     valor: number,
- *     duracao: number,
- *     beneficios: string[],
- *     dataInicio: string,
- *     dataFim: string
- *   }}
- * 
- * Status 404: Plano não encontrado
- * - Retorna: { message: string }
- * 
- * Status 500: Erro interno do servidor
- * - Retorna: { message: string, error: string }
+ * @param {Request} req - Objeto de requisição
+ * @param {Response} res - Objeto de resposta
  */
 const buscarPlanoPorId = (req, res) => {
     try {
@@ -176,48 +139,8 @@ const buscarPlanoPorId = (req, res) => {
 
 /**
  * Atualiza um plano existente
- * 
- * @description
- * Atualiza as informações de um plano existente no sistema.
- * Permite a atualização parcial dos campos, mantendo os valores
- * existentes para campos não informados.
- * 
- * @param {Request} req - Objeto de requisição Express
- * @param {Response} res - Objeto de resposta Express
- * 
- * @returns {Response}
- * Status 200: Plano atualizado com sucesso
- * - Retorna: {
- *     message: string,
- *     plano: {
- *       id: string,
- *       nome: string,
- *       modalidades: string[],
- *       valor: number,
- *       duracao: number,
- *       beneficios: string[],
- *       dataInicio: string, // Formato AAAA-MM-DD
- *       dataFim: string     // Formato AAAA-MM-DD
- *     }
- *   }
- * 
- * Status 400: Erro de validação
- * - Retorna: { errors: Array<{ msg: string, param: string }> }
- * 
- * Status 404: Plano não encontrado
- * - Retorna: { message: string }
- * 
- * Status 500: Erro interno do servidor
- * - Retorna: { message: string, error: string }
- * 
- * @example
- * Exemplo de payload de atualização:
- * {
- *   "modalidades": ["Musculação", "Yoga"],
- *   "valor": 175.00,
- *   "dataInicio": "2025-12-01",
- *   "dataFim": "2026-01-01"
- * }
+ * @param {Request} req - Objeto de requisição
+ * @param {Response} res - Objeto de resposta
  */
 const atualizarPlano = (req, res) => {
     try {

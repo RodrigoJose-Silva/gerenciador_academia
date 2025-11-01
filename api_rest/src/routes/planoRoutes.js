@@ -1,6 +1,49 @@
 /**
  * Rotas de Planos
  * Define os endpoints para gerenciamento de planos
+ * 
+ * @swagger
+ * components:
+ *   schemas:
+ *     Plano:
+ *       type: object
+ *       required:
+ *         - nome
+ *         - modalidades
+ *         - valor
+ *         - duracao
+ *         - beneficios
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: ID único do plano
+ *         nome:
+ *           type: string
+ *           description: Nome do plano
+ *         modalidades:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Lista de modalidades incluídas no plano
+ *         valor:
+ *           type: number
+ *           format: float
+ *           description: Valor do plano em reais
+ *         duracao:
+ *           type: integer
+ *           description: Duração do plano em dias
+ *         beneficios:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Lista de benefícios incluídos no plano
+ *         ativo:
+ *           type: boolean
+ *           description: Status do plano
+ *         dataCadastro:
+ *           type: string
+ *           format: date
+ *           description: Data de cadastro do plano (AAAA-MM-DD)
  */
 
 const express = require('express');
@@ -43,10 +86,10 @@ const { PERMISSOES } = require('../models/Permissions');
  *       500:
  *         description: Erro no servidor
  */
-router.post('/', 
-    autenticar, 
+router.post('/',
+    autenticar,
     verificarPermissao(PERMISSOES.CRIAR_PLANO),
-    validarCriacaoPlano, 
+    validarCriacaoPlano,
     planoController.criarPlano
 );
 
@@ -74,8 +117,8 @@ router.post('/',
  *       500:
  *         description: Erro no servidor
  */
-router.get('/', 
-    autenticar, 
+router.get('/',
+    autenticar,
     verificarPermissao(PERMISSOES.LISTAR_PLANOS),
     planoController.listarPlanos
 );
@@ -111,8 +154,8 @@ router.get('/',
  *       500:
  *         description: Erro no servidor
  */
-router.get('/:id', 
-    autenticar, 
+router.get('/:id',
+    autenticar,
     verificarPermissao(PERMISSOES.VISUALIZAR_PLANO),
     planoController.buscarPlanoPorId
 );
@@ -156,10 +199,10 @@ router.get('/:id',
  *       500:
  *         description: Erro no servidor
  */
-router.put('/:id', 
-    autenticar, 
+router.put('/:id',
+    autenticar,
     verificarPermissao(PERMISSOES.EDITAR_PLANO),
-    validarAtualizacaoPlano, 
+    validarAtualizacaoPlano,
     planoController.atualizarPlano
 );
 
@@ -190,8 +233,8 @@ router.put('/:id',
  *       500:
  *         description: Erro no servidor
  */
-router.delete('/:id', 
-    autenticar, 
+router.delete('/:id',
+    autenticar,
     verificarPermissao(PERMISSOES.EXCLUIR_PLANO),
     planoController.excluirPlano
 );

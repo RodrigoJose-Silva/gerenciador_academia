@@ -7,11 +7,11 @@ const Plano = require('../../../src/models/Plano');
 describe('Modelo Plano', () => {
     // Dados de exemplo para testes
     const dadosPlano = {
-        nome: 'Plano Premium',
-        descricao: 'Acesso completo a todas as modalidades da academia',
-        valor: 99.90,
-        duracao: 12,
-        modalidades: ['Musculação', 'Natação', 'Pilates'],
+        nome: 'PLANO_PREMIUM',
+        modalidades: ['Acesso completo à academia e aulas'],
+        valor: 150.00,
+        duracao: 30,
+        beneficios: ['Acesso ilimitado', 'Aulas coletivas', 'Avaliação física mensal'],
         ativo: true
     };
 
@@ -24,30 +24,32 @@ describe('Modelo Plano', () => {
 
         // Verifica os campos obrigatórios
         expect(plano.nome).toBe(dadosPlano.nome);
-        expect(plano.descricao).toBe(dadosPlano.descricao);
+        expect(plano.modalidades).toEqual(dadosPlano.modalidades);
         expect(plano.valor).toBe(dadosPlano.valor);
         expect(plano.duracao).toBe(dadosPlano.duracao);
-        expect(plano.modalidades).toEqual(dadosPlano.modalidades);
+        expect(plano.beneficios).toEqual(dadosPlano.beneficios);
         expect(plano.ativo).toBe(dadosPlano.ativo);
 
-        // Verifica se a data de cadastro foi gerada
+        // Verifica se a data de cadastro foi gerada no formato correto
         expect(plano.dataCadastro).toBeDefined();
-        expect(new Date(plano.dataCadastro)).toBeInstanceOf(Date);
+        expect(plano.dataCadastro).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
     test('Deve criar um plano com valores padrão para campos opcionais', () => {
         // Dados sem campos opcionais
         const dadosMinimos = {
-            nome: 'Plano Básico',
-            descricao: 'Acesso básico à academia',
-            valor: 49.90,
-            duracao: 3
+            nome: 'PLANO_BASICO',
+            modalidades: ['Musculação básica'],
+            valor: 89.90,
+            duracao: 30,
+            beneficios: ['Acesso à academia']
         };
 
         const plano = new Plano(dadosMinimos);
 
         // Verifica valores padrão
-        expect(plano.modalidades).toEqual([]);
+        expect(plano.modalidades).toEqual(['Musculação básica']);
+        expect(plano.beneficios).toEqual(['Acesso à academia']);
         expect(plano.ativo).toBe(true);
     });
 

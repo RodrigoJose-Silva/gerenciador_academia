@@ -20,11 +20,11 @@ describe('Controlador de Planos', () => {
 
     // Dados de exemplo para testes
     const dadosPlano = {
-        nome: 'Plano Premium',
-        descricao: 'Acesso completo a todas as modalidades da academia',
-        valor: 99.90,
-        duracao: 12,
-        modalidades: ['Musculação', 'Natação', 'Pilates'],
+        nome: 'PLANO_PREMIUM',
+        modalidades: ['Acesso completo à academia e aulas'],
+        valor: 150.00,
+        duracao: 30,
+        beneficios: ['Acesso ilimitado', 'Aulas coletivas', 'Avaliação física mensal'],
         ativo: true
     };
 
@@ -137,7 +137,12 @@ describe('Controlador de Planos', () => {
 
             // Configura o ID e os dados de atualização na requisição
             req.params.id = plano.id;
-            req.body = { nome: 'Plano Atualizado', valor: 129.90 };
+            req.body = {
+                nome: 'PLANO_ATUALIZADO',
+                valor: 129.90,
+                modalidades: ['Acesso premium à academia'],
+                beneficios: ['Acesso VIP', 'Personal Trainer']
+            };
 
             // Executa o controlador
             planoController.atualizarPlano(req, res);
@@ -148,10 +153,12 @@ describe('Controlador de Planos', () => {
 
             // Verifica se o plano foi atualizado no serviço de armazenamento
             const planoAtualizado = storageService.buscarPlanoPorId(plano.id);
-            expect(planoAtualizado.nome).toBe('Plano Atualizado');
+            expect(planoAtualizado.nome).toBe('PLANO_ATUALIZADO');
             expect(planoAtualizado.valor).toBe(129.90);
+            expect(planoAtualizado.modalidades).toEqual(['Acesso premium à academia']);
+            expect(planoAtualizado.beneficios).toEqual(['Acesso VIP', 'Personal Trainer']);
             // Verifica se os outros campos permaneceram inalterados
-            expect(planoAtualizado.descricao).toBe(dadosPlano.descricao);
+            expect(planoAtualizado.duracao).toBe(dadosPlano.duracao);
         });
     });
 
