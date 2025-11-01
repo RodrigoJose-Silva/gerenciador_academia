@@ -120,9 +120,10 @@ const alunoValidators = [
 const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        const errorArray = errors.array();
         return res.status(400).json({
-            message: 'Erro de validação',
-            errors: errors.array()
+            message: errorArray[0].msg,
+            field: errorArray[0].path
         });
     }
     next();
