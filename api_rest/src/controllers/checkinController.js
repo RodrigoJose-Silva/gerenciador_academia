@@ -143,26 +143,48 @@ const listarCheckinsPorAluno = (req, res) => {
 
 /**
  * Exclui um checkin
- * @param {Request} req - Objeto de requisição
- * @param {Response} res - Objeto de resposta
+ * @param {Request} req - Objeto de requisição do Express
+ * @param {Response} res - Objeto de resposta do Express
+ * @returns {Response} Resposta da operação de exclusão
  */
 const excluirCheckin = (req, res) => {
     try {
-        const { id } = req.params;
+        // Valida se o ID foi fornecido
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json({
+                message: 'ID do checkin é obrigatório'
+            });
+        }
+
+        // Converte o ID para número e valida
+        const numericId = Number(id);
+        if (isNaN(numericId)) {
+            return res.status(400).json({
+                message: 'ID do checkin inválido'
+            });
+        }
 
         // Verifica se o checkin existe
-        const checkinExistente = storageService.buscarCheckinPorId(id);
+        const checkinExistente = storageService.buscarCheckinPorId(numericId);
         if (!checkinExistente) {
             return res.status(404).json({
                 message: 'Checkin não encontrado'
             });
         }
 
-        // Exclui o checkin do serviço de armazenamento
-        storageService.deletarCheckin(id);
+        // Tenta excluir o checkin
+        const deletado = storageService.deletarCheckin(numericId);
+        if (!deletado) {
+            return res.status(500).json({
+                message: 'Erro ao excluir checkin. Operação não realizada.'
+            });
+        }
 
+        // Retorna sucesso com o ID excluído
         return res.status(200).json({
-            message: 'Checkin excluído com sucesso'
+            message: 'Checkin excluído com sucesso',
+            id: numericId
         });
     } catch (error) {
         return res.status(500).json({

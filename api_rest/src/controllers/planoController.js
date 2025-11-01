@@ -139,26 +139,48 @@ const atualizarPlano = (req, res) => {
 
 /**
  * Exclui um plano
- * @param {Request} req - Objeto de requisição
- * @param {Response} res - Objeto de resposta
+ * @param {Request} req - Objeto de requisição do Express
+ * @param {Response} res - Objeto de resposta do Express
+ * @returns {Response} Resposta da operação de exclusão
  */
 const excluirPlano = (req, res) => {
     try {
-        const { id } = req.params;
+        // Valida se o ID foi fornecido
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json({
+                message: 'ID do plano é obrigatório'
+            });
+        }
+
+        // Converte o ID para número e valida
+        const numericId = Number(id);
+        if (isNaN(numericId)) {
+            return res.status(400).json({
+                message: 'ID do plano inválido'
+            });
+        }
 
         // Verifica se o plano existe
-        const planoExistente = storageService.buscarPlanoPorId(id);
+        const planoExistente = storageService.buscarPlanoPorId(numericId);
         if (!planoExistente) {
             return res.status(404).json({
                 message: 'Plano não encontrado'
             });
         }
 
-        // Exclui o plano do serviço de armazenamento
-        storageService.deletarPlano(id);
+        // Tenta excluir o plano
+        const deletado = storageService.deletarPlano(numericId);
+        if (!deletado) {
+            return res.status(500).json({
+                message: 'Erro ao excluir plano. Operação não realizada.'
+            });
+        }
 
+        // Retorna sucesso com o ID excluído
         return res.status(200).json({
-            message: 'Plano excluído com sucesso'
+            message: 'Plano excluído com sucesso',
+            id: numericId
         });
     } catch (error) {
         return res.status(500).json({

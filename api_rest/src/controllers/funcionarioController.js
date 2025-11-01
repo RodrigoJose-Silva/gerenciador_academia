@@ -186,21 +186,48 @@ const atualizarFuncionario = async (req, res) => {
 
 /**
  * Deleta um funcionário
+ * @param {Request} req - Objeto de requisição do Express
+ * @param {Response} res - Objeto de resposta do Express
+ * @returns {Response} Resposta da operação de deleção
  */
 const deletarFuncionario = (req, res) => {
     try {
-        const funcionario = storageService.buscarFuncionarioPorId(req.params.id);
+        // Valida se o ID foi fornecido
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json({
+                message: 'ID do funcionário é obrigatório'
+            });
+        }
 
+        // Converte o ID para número e valida
+        const numericId = Number(id);
+        if (isNaN(numericId)) {
+            return res.status(400).json({
+                message: 'ID do funcionário inválido'
+            });
+        }
+
+        // Verifica se o funcionário existe
+        const funcionario = storageService.buscarFuncionarioPorId(numericId);
         if (!funcionario) {
             return res.status(404).json({
                 message: 'Funcionário não encontrado'
             });
         }
 
-        storageService.deletarFuncionario(req.params.id);
+        // Tenta deletar o funcionário
+        const deletado = storageService.deletarFuncionario(numericId);
+        if (!deletado) {
+            return res.status(500).json({
+                message: 'Erro ao deletar funcionário. Operação não realizada.'
+            });
+        }
 
+        // Retorna sucesso com o ID deletado
         res.status(200).json({
-            message: 'Funcionário deletado com sucesso'
+            message: 'Funcionário deletado com sucesso',
+            id: numericId
         });
     } catch (error) {
         console.error('Erro ao deletar funcionário:', error);
