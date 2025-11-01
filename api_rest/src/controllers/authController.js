@@ -1,6 +1,12 @@
 /**
  * Controller de Autenticação
- * Gerencia o login de funcionários com controle de tentativas
+ * Gerencia o processo de autenticação de funcionários com controle de tentativas de login
+ * 
+ * Funcionalidades:
+ * - Login de funcionários com validação de credenciais
+ * - Controle de tentativas de login (máximo 3 tentativas)
+ * - Bloqueio automático de conta após exceder tentativas
+ * - Reset de contador de tentativas após login bem-sucedido
  */
 
 const bcrypt = require('bcrypt');
@@ -11,6 +17,13 @@ const MAX_TENTATIVAS = 3;
 
 /**
  * Realiza o login de um funcionário
+ * 
+ * @param {Request} req - Objeto de requisição Express contendo userName e senha no body
+ * @param {Response} res - Objeto de resposta Express
+ * @returns {Response} - Retorna status 200 e token JWT se autenticado com sucesso
+ *                      - Retorna status 401 se credenciais inválidas
+ *                      - Retorna status 403 se conta bloqueada
+ *                      - Retorna status 500 em caso de erro interno
  */
 const login = async (req, res) => {
     try {
@@ -80,24 +93,15 @@ const login = async (req, res) => {
             perfil: funcionario.perfil
         });
 
-        // Retorna os dados do funcionário e o token
+        // Retorna apenas a mensagem e o token
         res.status(200).json({
             message: 'Login realizado com sucesso',
-            token: token,
-            funcionario: {
-                id: funcionario.id,
-                nomeCompleto: funcionario.nomeCompleto,
-                userName: funcionario.userName,
-                email: funcionario.email,
-                cargo: funcionario.cargo,
-                perfil: funcionario.perfil
-            }
+            token: token
         });
     } catch (error) {
         console.error('Erro ao realizar login:', error);
         res.status(500).json({
-            message: 'Erro ao realizar login',
-            error: error.message
+            message: 'Erro ao realizar login: ' + error.message
         });
     }
 };
