@@ -27,9 +27,10 @@ class Plano {
 
     /**
      * Gera um ID único para o plano
+     * @returns {number} ID numérico único
      */
     generateId() {
-        return Math.random().toString(36).substr(2, 9);
+        return Date.now();
     }
 
     /**
