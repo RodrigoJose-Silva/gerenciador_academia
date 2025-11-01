@@ -48,6 +48,20 @@ class Aluno {
         return `${numero.slice(0, 3)}.${numero.slice(3, 6)}.${numero.slice(6, 9)}-${numero.slice(9)}`;
     }
 
+    /**
+     * Valida o status do aluno
+     * @param {string} status - Status a ser validado
+     * @returns {string} Status validado ou 'ATIVO' como padrão
+     * @throws {Error} Se o status fornecido não for válido
+     */
+    validarStatus(status) {
+        const statusValidos = ['ATIVO', 'BLOQUEADO', 'INATIVO'];
+        if (status && !statusValidos.includes(status)) {
+            throw new Error('Status inválido. Valores permitidos: ATIVO, BLOQUEADO, INATIVO');
+        }
+        return status || 'ATIVO';
+    }
+
     constructor(data) {
         this.id = null; // Será definido pelo StorageService
         this.nomeCompleto = data.nomeCompleto;
@@ -57,7 +71,7 @@ class Aluno {
         this.cpf = data.cpf || null;
         this.planoId = data.planoId || 'MUSCULAÇÃO';
         this.dataInicio = this.formatarData(data.dataInicio) || this.formatarData(new Date());
-        this.status = 'ATIVO'; // Status default para novos alunos
+        this.status = this.validarStatus(data.status); // Valida o status ou usa 'ATIVO' como padrão
         this.endereco = {
             rua: data.endereco.rua,
             numero: data.endereco.numero,

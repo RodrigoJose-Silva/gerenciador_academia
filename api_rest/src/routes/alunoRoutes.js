@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const alunoController = require('../controllers/alunoController');
 const { alunoValidators, validate } = require('../validators/alunoValidators');
+const { alunoUpdateValidators } = require('../validators/alunoUpdateValidators');
 const { autenticar, verificarPermissao } = require('../middlewares/authMiddleware');
 const { PERMISSOES } = require('../models/Permissions');
 
@@ -124,7 +125,7 @@ router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_ALUNO), 
  *         description: Aluno não encontrado
  */
 // PUT /api/alunos/:id - Atualizar aluno (requer: EDITAR_ALUNO)
-router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_ALUNO), alunoController.atualizarAluno);
+router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_ALUNO), alunoUpdateValidators, validate, alunoController.atualizarAluno);
 
 /**
  * @swagger
