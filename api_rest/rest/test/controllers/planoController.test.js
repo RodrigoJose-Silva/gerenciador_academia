@@ -130,18 +130,72 @@ describe('Controlador de Planos', () => {
             expect(res.json).toHaveBeenCalledWith({ message: 'Plano não encontrado' });
         });
 
-        test('Deve atualizar o plano com sucesso', () => {
+        test('Deve retornar 400 quando nenhuma propriedade válida é fornecida', () => {
             // Adiciona um plano ao serviço de armazenamento
             const plano = new Plano(dadosPlano);
             storageService.adicionarPlano(plano);
 
-            // Configura o ID e os dados de atualização na requisição
+            // Configura o ID e dados vazios/nulos
+            req.params.id = plano.id;
+            req.body = {
+                nome: '',
+                valor: null,
+                modalidades: undefined
+            };
+
+            // Executa o controlador
+            planoController.atualizarPlano(req, res);
+
+            // Verifica se retorna erro de validação
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({
+                message: 'Nenhuma propriedade válida fornecida para atualização'
+            });
+        });
+
+        test('Deve atualizar o plano com sucesso mantendo valores existentes', () => {
+            // Adiciona um plano ao serviço de armazenamento
+            const plano = new Plano(dadosPlano);
+            storageService.adicionarPlano(plano);
+
+            // Configura o ID e apenas algumas propriedades para atualização
+            req.params.id = plano.id;
+            req.body = {
+                nome: 'PLANO_ATUALIZADO',
+                valor: 129.90
+            };
+
+            // Executa o controlador
+            planoController.atualizarPlano(req, res);
+
+            // Verifica se o status e o JSON foram chamados corretamente
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalled();
+
+            // Verifica se o plano foi atualizado corretamente
+            const planoAtualizado = storageService.buscarPlanoPorId(plano.id);
+            expect(planoAtualizado.nome).toBe('PLANO_ATUALIZADO');
+            expect(planoAtualizado.valor).toBe(129.90);
+            // Verifica se os outros campos permaneceram inalterados
+            expect(planoAtualizado.modalidades).toEqual(dadosPlano.modalidades);
+            expect(planoAtualizado.duracao).toBe(dadosPlano.duracao);
+            expect(planoAtualizado.beneficios).toEqual(dadosPlano.beneficios);
+        });
+
+        test('Deve atualizar o plano com sucesso com todas as propriedades', () => {
+            // Adiciona um plano ao serviço de armazenamento
+            const plano = new Plano(dadosPlano);
+            storageService.adicionarPlano(plano);
+
+            // Configura o ID e os dados de atualização completos
             req.params.id = plano.id;
             req.body = {
                 nome: 'PLANO_ATUALIZADO',
                 valor: 129.90,
                 modalidades: ['Acesso premium à academia'],
-                beneficios: ['Acesso VIP', 'Personal Trainer']
+                beneficios: ['Acesso VIP', 'Personal Trainer'],
+                duracao: 45,
+                ativo: false
             };
 
             // Executa o controlador
@@ -157,8 +211,8 @@ describe('Controlador de Planos', () => {
             expect(planoAtualizado.valor).toBe(129.90);
             expect(planoAtualizado.modalidades).toEqual(['Acesso premium à academia']);
             expect(planoAtualizado.beneficios).toEqual(['Acesso VIP', 'Personal Trainer']);
-            // Verifica se os outros campos permaneceram inalterados
-            expect(planoAtualizado.duracao).toBe(dadosPlano.duracao);
+            expect(planoAtualizado.duracao).toBe(45);
+            expect(planoAtualizado.ativo).toBe(false);
         });
     });
 
