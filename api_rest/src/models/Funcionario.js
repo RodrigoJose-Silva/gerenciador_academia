@@ -60,7 +60,30 @@ class Funcionario {
     }
 
     /**
+     * Formata o número de telefone para o padrão (XX) XXXXX-XXXX
+     * @param {string} telefone - Número de telefone sem formatação
+     * @returns {string} Número de telefone formatado
+     */
+    formatarTelefone(telefone) {
+        if (!telefone) return null;
+        const numero = telefone.replace(/\D/g, '');
+        return `(${numero.slice(0, 2)}) ${numero.slice(2, 7)}-${numero.slice(7)}`;
+    }
+
+    /**
+     * Formata o CPF para o padrão XXX.XXX.XXX-XX
+     * @param {string} cpf - CPF sem formatação
+     * @returns {string} CPF formatado
+     */
+    formatarCPF(cpf) {
+        if (!cpf) return null;
+        const numero = cpf.replace(/\D/g, '');
+        return `${numero.slice(0, 3)}.${numero.slice(3, 6)}.${numero.slice(6, 9)}-${numero.slice(9)}`;
+    }
+
+    /**
      * Retorna todos os dados do funcionário incluindo salário
+     * com telefone e CPF formatados
      */
     toFullJSON() {
         return {
@@ -68,9 +91,9 @@ class Funcionario {
             nomeCompleto: this.nomeCompleto,
             email: this.email,
             userName: this.userName,
-            telefone: this.telefone,
+            telefone: this.formatarTelefone(this.telefone),
             dataNascimento: this.dataNascimento,
-            cpf: this.cpf,
+            cpf: this.formatarCPF(this.cpf),
             cargo: this.cargo,
             perfil: this.perfil,
             dataAdmissao: this.dataAdmissao,

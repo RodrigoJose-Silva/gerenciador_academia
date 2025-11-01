@@ -128,8 +128,17 @@ describe('GET /api/funcionarios - Listar Funcionários', () => {
         storageService.limparDados();
     });
 
-    test('Listar funcionários deve retornar array', async () => {
+    test('Listar funcionários deve retornar array com dados formatados', async () => {
         const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        // Cadastra um funcionário primeiro
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(__dirname, 'data/cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+        await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
 
         const response = await request(app)
             .get('/api/funcionarios')
@@ -137,6 +146,27 @@ describe('GET /api/funcionarios - Listar Funcionários', () => {
 
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
+        if (response.body.length > 0) {
+            const funcionario = response.body[0];
+            expect(funcionario).toHaveProperty('nomeCompleto');
+            expect(funcionario).toHaveProperty('email');
+            expect(funcionario).toHaveProperty('userName');
+            expect(funcionario).toHaveProperty('telefone');
+            expect(funcionario).toHaveProperty('dataNascimento');
+            expect(funcionario).toHaveProperty('cpf');
+            expect(funcionario).toHaveProperty('cargo');
+            expect(funcionario).toHaveProperty('perfil');
+            expect(funcionario).toHaveProperty('dataAdmissao');
+            expect(funcionario).toHaveProperty('cref');
+            expect(funcionario).toHaveProperty('salario');
+            expect(funcionario).toHaveProperty('dataCadastro');
+            // Verifica formato do telefone
+            expect(funcionario.telefone).toMatch(/^\(\d{2}\) \d{5}-\d{4}$/);
+            // Verifica formato do CPF
+            if (funcionario.cpf) {
+                expect(funcionario.cpf).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
+            }
+        }
     });
 });
 
@@ -145,7 +175,7 @@ describe('GET /api/funcionarios/:id - Buscar Funcionário por ID', () => {
         storageService.limparDados();
     });
 
-    test('Buscar funcionário existente deve retornar 200', async () => {
+    test('Buscar funcionário existente deve retornar 200 com dados formatados', async () => {
         const token = gerarTokenParaTeste('ADMINISTRADOR');
 
         // Cadastra um funcionário
@@ -167,6 +197,25 @@ describe('GET /api/funcionarios/:id - Buscar Funcionário por ID', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('id');
+        expect(response.body).toHaveProperty('nomeCompleto');
+        expect(response.body).toHaveProperty('email');
+        expect(response.body).toHaveProperty('userName');
+        expect(response.body).toHaveProperty('telefone');
+        expect(response.body).toHaveProperty('dataNascimento');
+        expect(response.body).toHaveProperty('cpf');
+        expect(response.body).toHaveProperty('cargo');
+        expect(response.body).toHaveProperty('perfil');
+        expect(response.body).toHaveProperty('dataAdmissao');
+        expect(response.body).toHaveProperty('cref');
+        expect(response.body).toHaveProperty('salario');
+        expect(response.body).toHaveProperty('dataCadastro');
+
+        // Verifica formato do telefone
+        expect(response.body.telefone).toMatch(/^\(\d{2}\) \d{5}-\d{4}$/);
+        // Verifica formato do CPF
+        if (response.body.cpf) {
+            expect(response.body.cpf).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
+        }
     });
 
     test('Buscar funcionário inexistente deve retornar 404', async () => {

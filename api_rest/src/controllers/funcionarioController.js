@@ -60,10 +60,16 @@ const cadastrarFuncionario = async (req, res) => {
 /**
  * Lista todos os funcionários
  */
+/**
+ * Lista todos os funcionários com dados completos formatados
+ * Retorna um array com todos os funcionários cadastrados, incluindo dados pessoais e profissionais
+ * O telefone e CPF são retornados com máscara de formatação
+ */
 const listarFuncionarios = (req, res) => {
     try {
         const funcionarios = storageService.listarFuncionarios();
-        res.status(200).json(funcionarios);
+        const funcionariosFormatados = funcionarios.map(funcionario => funcionario.toFullJSON());
+        res.status(200).json(funcionariosFormatados);
     } catch (error) {
         console.error('Erro ao listar funcionários:', error);
         res.status(500).json({
@@ -76,6 +82,11 @@ const listarFuncionarios = (req, res) => {
 /**
  * Busca um funcionário por ID
  */
+/**
+ * Busca um funcionário por ID
+ * Retorna os dados completos do funcionário, incluindo informações pessoais e profissionais
+ * O telefone e CPF são retornados com máscara de formatação
+ */
 const buscarFuncionarioPorId = (req, res) => {
     try {
         const funcionario = storageService.buscarFuncionarioPorId(req.params.id);
@@ -86,7 +97,7 @@ const buscarFuncionarioPorId = (req, res) => {
             });
         }
 
-        res.status(200).json(funcionario.toJSON());
+        res.status(200).json(funcionario.toFullJSON());
     } catch (error) {
         console.error('Erro ao buscar funcionário:', error);
         res.status(500).json({
