@@ -1,6 +1,19 @@
 /**
  * Controller de Aluno
- * Gerencia as operações relacionadas ao cadastro de alunos
+ * Gerencia as operações relacionadas ao cadastro e gerenciamento de alunos
+ *
+ * Este controller implementa as seguintes funcionalidades:
+ * - Cadastro de novos alunos com validação de dados
+ * - Listagem de todos os alunos
+ * - Busca de aluno por ID
+ * - Atualização de dados do aluno
+ * - Exclusão de aluno
+ * 
+ * Observações importantes:
+ * - O ID do aluno é gerado automaticamente pelo sistema
+ * - Em caso de sucesso no cadastro, apenas o ID do novo aluno é retornado
+ * - Em caso de erro de validação, retorna o campo específico e a mensagem de erro
+ * - O email do aluno é único no sistema
  */
 
 const Aluno = require('../models/Aluno');
@@ -8,6 +21,19 @@ const storageService = require('../services/StorageService');
 
 /**
  * Cadastra um novo aluno
+ * 
+ * @description 
+ * Realiza o cadastro de um novo aluno no sistema. 
+ * Verifica se o email já está cadastrado antes de prosseguir.
+ * Remove o ID do corpo da requisição para garantir que seja gerado automaticamente.
+ * 
+ * @param {Request} req - Objeto de requisição Express
+ * @param {Response} res - Objeto de resposta Express
+ * 
+ * @returns {Response} 
+ * - Status 201: Aluno cadastrado com sucesso (retorna apenas o ID)
+ * - Status 409: Email já cadastrado
+ * - Status 500: Erro interno do servidor
  */
 const cadastrarAluno = (req, res) => {
     try {

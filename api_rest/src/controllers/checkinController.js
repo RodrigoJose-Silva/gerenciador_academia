@@ -1,6 +1,25 @@
 /**
  * Controlador de Checkins
  * Gerencia as operações relacionadas aos checkins de alunos na academia
+ * 
+ * Este controlador implementa as seguintes funcionalidades:
+ * - Registro de entrada de alunos (checkin)
+ * - Listagem de todos os checkins
+ * - Busca de checkin específico por ID
+ * - Listagem de checkins por aluno
+ * - Exclusão de registros de checkin
+ * 
+ * Características importantes:
+ * - O ID do checkin é gerado automaticamente
+ * - Data e hora são registradas automaticamente
+ * - O funcionário que registrou o checkin é identificado
+ * - Validações garantem que o aluno existe no sistema
+ * 
+ * Respostas padronizadas:
+ * - Sucesso em criação: Apenas ID
+ * - Erro de validação: Campo específico e mensagem
+ * - Erro de aluno não encontrado: Mensagem específica
+ * - Erro interno: Mensagem descritiva
  */
 
 const { validationResult } = require('express-validator');
@@ -9,15 +28,48 @@ const storageService = require('../services/StorageService');
 
 /**
  * Registra um novo checkin
- * @param {Request} req - Objeto de requisição
- * @param {Response} res - Objeto de resposta
+ * 
+ * @description
+ * Realiza o registro de entrada de um aluno na academia.
+ * Valida a existência do aluno e registra informações automáticas como data/hora.
+ * 
+ * @param {Request} req - Objeto de requisição Express contendo alunoId e observação opcional
+ * @param {Response} res - Objeto de resposta Express
+ * 
+ * @returns {Response}
+ * Status 201: Checkin registrado com sucesso
+ * - Retorna: { id: string }
+ * 
+ * Status 400: Erro de validação
+ * - Retorna: { message: string, field: string }
+ * 
+ * Status 404: Aluno não encontrado
+ * - Retorna: { message: string }
+ * 
+ * Status 500: Erro interno do servidor
+ * - Retorna: { message: string }
+ * 
+ * @example
+ * Exemplo de payload:
+ * {
+ *   "alunoId": "123456789",
+ *   "observacao": "Treino de musculação"
+ * }
+ * 
+ * @security
+ * - Requer autenticação do funcionário
+ * - O ID do funcionário é registrado automaticamente
  */
 const registrarCheckin = (req, res) => {
     try {
         // Verifica se há erros de validação
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            const errorArray = errors.array();
+            return res.status(400).json({
+                message: errorArray[0].msg,
+                field: errorArray[0].path
+            });
         }
 
         const { alunoId } = req.body;
@@ -48,13 +100,11 @@ const registrarCheckin = (req, res) => {
         const checkinSalvo = storageService.adicionarCheckin(novoCheckin);
 
         return res.status(201).json({
-            message: 'Checkin registrado com sucesso',
-            checkin: checkinSalvo.toJSON()
+            id: checkinSalvo.id
         });
     } catch (error) {
         return res.status(500).json({
-            message: 'Erro ao registrar checkin',
-            error: error.message
+            message: 'Erro ao registrar checkin: ' + error.message
         });
     }
 };
