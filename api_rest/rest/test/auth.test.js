@@ -1,6 +1,7 @@
 /**
  * Testes para Autenticação
  * Cobertura de sentença e decisão incluindo bloqueio após 3 tentativas
+ * e validação de payload
  */
 
 const request = require('supertest');
@@ -200,5 +201,31 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
         expect(response2.status).toBe(401);
         expect(response2.body.tentativasRestantes).toBe(2);
         expect(response2.body.message).toBe('Credenciais inválidas');
+    });
+
+    test('Login com payload inválido deve retornar 400', async () => {
+        // Tenta fazer login sem username
+        const response = await request(app)
+            .post('/api/auth/login')
+            .send({ senha: 'senha123' });
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+        
+        // Tenta fazer login sem senha
+        const response2 = await request(app)
+            .post('/api/auth/login')
+            .send({ username: 'usuario' });
+
+        expect(response2.status).toBe(400);
+        expect(response2.body).toHaveProperty('errors');
+        
+        // Tenta fazer login com payload vazio
+        const response3 = await request(app)
+            .post('/api/auth/login')
+            .send({});
+
+        expect(response3.status).toBe(400);
+        expect(response3.body).toHaveProperty('errors');
     });
 });

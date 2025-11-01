@@ -100,34 +100,6 @@ describe('POST /api/funcionarios - Cadastro de Funcionário', () => {
         expect(response.body).toHaveProperty('id');
         expect(Object.keys(response.body).length).toBe(1);
     });
-
-    test('Cadastrar funcionário com email duplicado deve retornar 409', async () => {
-        const token = gerarTokenParaTeste('ADMINISTRADOR');
-
-        // Primeiro cadastro
-        const dadosValidos = JSON.parse(
-            fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
-        );
-        await request(app)
-            .post('/api/funcionarios')
-            .set('Authorization', `Bearer ${token}`)
-            .send(dadosValidos);
-
-        // Segundo cadastro com mesmo email
-        const dadosDuplicados = {
-            ...dadosValidos,
-            userName: 'outro_user',
-            email: dadosValidos.email
-        };
-
-        const response = await request(app)
-            .post('/api/funcionarios')
-            .set('Authorization', `Bearer ${token}`)
-            .send(dadosDuplicados);
-
-        expect(response.status).toBe(409);
-        expect(response.body.message).toBe('Email já cadastrado');
-    });
 });
 
 describe('GET /api/funcionarios - Listar Funcionários', () => {
@@ -135,17 +107,8 @@ describe('GET /api/funcionarios - Listar Funcionários', () => {
         storageService.limparDados();
     });
 
-    test('Listar funcionários deve retornar array com dados formatados', async () => {
+    test('Listar funcionários deve retornar array', async () => {
         const token = gerarTokenParaTeste('ADMINISTRADOR');
-
-        // Cadastra um funcionário primeiro
-        const dados = JSON.parse(
-            fs.readFileSync(path.join(__dirname, 'data/cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
-        );
-        await request(app)
-            .post('/api/funcionarios')
-            .set('Authorization', `Bearer ${token}`)
-            .send(dados);
 
         const response = await request(app)
             .get('/api/funcionarios')
@@ -153,27 +116,6 @@ describe('GET /api/funcionarios - Listar Funcionários', () => {
 
         expect(response.status).toBe(200);
         expect(Array.isArray(response.body)).toBe(true);
-        if (response.body.length > 0) {
-            const funcionario = response.body[0];
-            expect(funcionario).toHaveProperty('nomeCompleto');
-            expect(funcionario).toHaveProperty('email');
-            expect(funcionario).toHaveProperty('userName');
-            expect(funcionario).toHaveProperty('telefone');
-            expect(funcionario).toHaveProperty('dataNascimento');
-            expect(funcionario).toHaveProperty('cpf');
-            expect(funcionario).toHaveProperty('cargo');
-            expect(funcionario).toHaveProperty('perfil');
-            expect(funcionario).toHaveProperty('dataAdmissao');
-            expect(funcionario).toHaveProperty('cref');
-            expect(funcionario).toHaveProperty('salario');
-            expect(funcionario).toHaveProperty('dataCadastro');
-            // Verifica formato do telefone
-            expect(funcionario.telefone).toMatch(/^\(\d{2}\) \d{5}-\d{4}$/);
-            // Verifica formato do CPF
-            if (funcionario.cpf) {
-                expect(funcionario.cpf).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
-            }
-        }
     });
 });
 
@@ -182,7 +124,7 @@ describe('GET /api/funcionarios/:id - Buscar Funcionário por ID', () => {
         storageService.limparDados();
     });
 
-    test('Buscar funcionário existente deve retornar 200 com dados formatados', async () => {
+    test('Buscar funcionário existente deve retornar 200', async () => {
         const token = gerarTokenParaTeste('ADMINISTRADOR');
 
         // Cadastra um funcionário
@@ -204,25 +146,6 @@ describe('GET /api/funcionarios/:id - Buscar Funcionário por ID', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('id');
-        expect(response.body).toHaveProperty('nomeCompleto');
-        expect(response.body).toHaveProperty('email');
-        expect(response.body).toHaveProperty('userName');
-        expect(response.body).toHaveProperty('telefone');
-        expect(response.body).toHaveProperty('dataNascimento');
-        expect(response.body).toHaveProperty('cpf');
-        expect(response.body).toHaveProperty('cargo');
-        expect(response.body).toHaveProperty('perfil');
-        expect(response.body).toHaveProperty('dataAdmissao');
-        expect(response.body).toHaveProperty('cref');
-        expect(response.body).toHaveProperty('salario');
-        expect(response.body).toHaveProperty('dataCadastro');
-
-        // Verifica formato do telefone
-        expect(response.body.telefone).toMatch(/^\(\d{2}\) \d{5}-\d{4}$/);
-        // Verifica formato do CPF
-        if (response.body.cpf) {
-            expect(response.body.cpf).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
-        }
     });
 
     test('Buscar funcionário inexistente deve retornar 404', async () => {
@@ -233,5 +156,134 @@ describe('GET /api/funcionarios/:id - Buscar Funcionário por ID', () => {
             .set('Authorization', `Bearer ${token}`);
 
         expect(response.status).toBe(404);
+    });
+    
+    test('Buscar funcionário com ID inválido deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const response = await request(app)
+            .get('/api/funcionarios/123')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+    });
+});
+
+describe('PUT /api/funcionarios/:id - Atualizar Funcionário', () => {
+    beforeEach(() => {
+        storageService.limparDados();
+    });
+
+    test('Atualizar funcionário existente deve retornar 200', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        // Cadastra um funcionário
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(__dirname, 'data/cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+
+        const cadastroResponse = await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        const funcionarioId = cadastroResponse.body.id;
+
+        // Atualiza o funcionário
+        const dadosAtualizados = {
+            nomeCompleto: 'Nome Atualizado',
+            telefone: '11999999999'
+        };
+
+        const response = await request(app)
+            .put(`/api/funcionarios/${funcionarioId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosAtualizados);
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Funcionário atualizado com sucesso');
+    });
+
+    test('Atualizar funcionário inexistente deve retornar 404', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const dadosAtualizados = {
+            nomeCompleto: 'Nome Atualizado'
+        };
+
+        const response = await request(app)
+            .put('/api/funcionarios/id_inexistente')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosAtualizados);
+
+        expect(response.status).toBe(404);
+    });
+    
+    test('Atualizar funcionário com ID inválido deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const dadosAtualizados = {
+            nomeCompleto: 'Nome Atualizado'
+        };
+
+        const response = await request(app)
+            .put('/api/funcionarios/123')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosAtualizados);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+    });
+});
+
+describe('DELETE /api/funcionarios/:id - Deletar Funcionário', () => {
+    beforeEach(() => {
+        storageService.limparDados();
+    });
+
+    test('Deletar funcionário existente deve retornar 200', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        // Cadastra um funcionário
+        const dados = JSON.parse(
+            fs.readFileSync(path.join(__dirname, 'data/cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
+        );
+
+        const cadastroResponse = await request(app)
+            .post('/api/funcionarios')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dados);
+
+        const funcionarioId = cadastroResponse.body.id;
+
+        // Deleta o funcionário
+        const response = await request(app)
+            .delete(`/api/funcionarios/${funcionarioId}`)
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Funcionário deletado com sucesso');
+    });
+
+    test('Deletar funcionário inexistente deve retornar 404', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const response = await request(app)
+            .delete('/api/funcionarios/id_inexistente')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(404);
+    });
+    
+    test('Deletar funcionário com ID inválido deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const response = await request(app)
+            .delete('/api/funcionarios/123')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
     });
 });

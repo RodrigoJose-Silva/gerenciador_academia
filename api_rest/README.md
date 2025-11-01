@@ -12,10 +12,20 @@
 - [Testes](#testes)
 - [Documentação Swagger](#documentação-swagger)
 - [Validações](#validações)
+- [Boas Práticas Implementadas](#boas-práticas-implementadas)
 
 ## 🎯 Sobre o Projeto
 
 API REST desenvolvida para gerenciamento de uma academia, permitindo cadastro de alunos, funcionários, planos, registro de checkins e autenticação de funcionários. A API segue boas práticas de desenvolvimento, Clean Code e possui cobertura de testes com MOCK.
+
+### Principais Funcionalidades
+- Cadastro e gerenciamento de alunos
+- Cadastro e gerenciamento de funcionários
+- Cadastro e gerenciamento de planos
+- Registro de checkins
+- Autenticação e autorização baseada em permissões
+- Validação de dados de entrada
+- Documentação interativa com Swagger
 
 ## 🛠 Tecnologias Utilizadas
 
@@ -48,6 +58,38 @@ A API segue uma arquitetura em camadas (Layered Architecture) separando as respo
 ┌─────────────────────────────────────┐
 │         Routes (Rotas)              │
 │    - Define endpoints da API        │
+└─────────────────────────────────────┘
+            ↓
+┌─────────────────────────────────────┐
+│       Middlewares                   │
+│    - Autenticação                   │
+│    - Validação                      │
+└─────────────────────────────────────┘
+            ↓
+┌─────────────────────────────────────┐
+│       Controllers                   │
+│    - Lógica de negócio              │
+└─────────────────────────────────────┘
+            ↓
+┌─────────────────────────────────────┐
+│         Models                      │
+│    - Estrutura de dados             │
+└─────────────────────────────────────┘
+```
+
+## 🧹 Boas Práticas Implementadas
+
+### Clean Code
+- **Nomes significativos**: Variáveis, funções e classes com nomes que revelam sua intenção
+- **Funções pequenas e focadas**: Cada função realiza apenas uma tarefa
+- **Comentários explicativos**: Documentação clara e objetiva
+- **Formatação consistente**: Código formatado de maneira uniforme
+
+### Validações
+- **Validação de rotas**: Todas as rotas com parâmetros ID possuem validação
+- **Validação de payload**: Requisições POST e PUT têm validação de dados de entrada
+- **Tratamento de erros**: Mensagens de erro claras e informativas
+- **Middleware de autenticação**: Proteção de rotas que exigem autenticação
 └──────────────┬──────────────────────┘
                │
 ┌──────────────▼──────────────────────┐
