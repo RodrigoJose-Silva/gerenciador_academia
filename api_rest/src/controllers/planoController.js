@@ -141,14 +141,33 @@ const buscarPlanoPorId = (req, res) => {
  * Atualiza um plano existente
  * 
  * @description
- * Realiza a atualização parcial ou completa de um plano existente.
- * - Requer pelo menos uma propriedade válida para atualização
- * - Propriedades não informadas mantêm seus valores originais
- * - Valores nulos ou em branco são ignorados
- * - ID do plano não pode ser alterado
+ * Realiza a atualização parcial ou total de um plano existente.
+ * Apenas os campos fornecidos serão atualizados, mantendo os valores
+ * existentes para campos não informados ou com valores null/undefined/blank.
  * 
- * @param {Request} req - Objeto de requisição
- * @param {Response} res - Objeto de resposta
+ * @param {Request} req - Objeto de requisição Express contendo dados do plano
+ * @param {Response} res - Objeto de resposta Express
+ * 
+ * @returns {Response}
+ * Status 200: Plano atualizado com sucesso
+ * - Retorna: { message: string, plano: Object }
+ * 
+ * Status 400: 
+ * - Erro de validação ou nenhuma alteração submetida
+ * - Retorna: { message: string } ou { errors: Array }
+ * 
+ * Status 404: Plano não encontrado
+ * - Retorna: { message: string }
+ * 
+ * Status 500: Erro interno do servidor
+ * - Retorna: { message: string, error: string }
+ * 
+ * @example
+ * Exemplo de payload para atualização parcial:
+ * {
+ *   "valor": 160.00,
+ *   "beneficios": ["Acesso ilimitado", "Aulas coletivas", "2 Avaliações físicas mensais"]
+ * }
  */
 const atualizarPlano = (req, res) => {
     try {
@@ -156,6 +175,13 @@ const atualizarPlano = (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
+        }
+
+        // Verifica se algum campo foi fornecido para atualização
+        if (Object.keys(req.body).length === 0) {
+            return res.status(400).json({
+                message: 'Nenhuma alteração foi submetida para atualização'
+            });
         }
 
         const { id } = req.params;
@@ -168,22 +194,31 @@ const atualizarPlano = (req, res) => {
             });
         }
 
-        // Filtra as propriedades válidas do body
-        const dadosParaAtualizar = Object.entries(req.body)
-            .filter(([_, value]) => value !== null && value !== undefined && value !== '')
-            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+        // Filtra apenas os campos válidos e não vazios do request
+        const camposAtualizados = {};
+        const campos = ['nome', 'modalidades', 'valor', 'duracao', 'beneficios', 'ativo'];
 
-        // Verifica se há propriedades válidas para atualizar
-        if (Object.keys(dadosParaAtualizar).length === 0) {
+        campos.forEach(campo => {
+            // Verifica se o campo existe no request e não é undefined/null/string vazia
+            if (req.body.hasOwnProperty(campo) &&
+                req.body[campo] !== undefined &&
+                req.body[campo] !== null &&
+                (typeof req.body[campo] !== 'string' || req.body[campo].trim() !== '')) {
+                camposAtualizados[campo] = req.body[campo];
+            }
+        });
+
+        // Verifica se há campos válidos para atualizar
+        if (Object.keys(camposAtualizados).length === 0) {
             return res.status(400).json({
-                message: 'Nenhuma propriedade válida fornecida para atualização'
+                message: 'Nenhum campo válido foi fornecido para atualização'
             });
         }
 
-        // Cria um novo objeto com os dados atualizados
+        // Cria um novo objeto mantendo os dados existentes e atualizando apenas os campos fornecidos
         const dadosAtualizados = {
             ...planoExistente,
-            ...dadosParaAtualizar,
+            ...camposAtualizados,
             id // Garante que o ID não seja alterado
         };
 
@@ -191,8 +226,7 @@ const atualizarPlano = (req, res) => {
         const planoAtualizado = storageService.atualizarPlano(id, new Plano(dadosAtualizados));
 
         return res.status(200).json({
-            message: 'Plano atualizado com sucesso',
-            plano: planoAtualizado
+            message: 'Plano atualizado com sucesso'
         });
     } catch (error) {
         return res.status(500).json({
