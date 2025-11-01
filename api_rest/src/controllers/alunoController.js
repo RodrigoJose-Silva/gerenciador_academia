@@ -129,21 +129,48 @@ const atualizarAluno = (req, res) => {
 
 /**
  * Deleta um aluno
+ * @param {Request} req - Objeto de requisição do Express
+ * @param {Response} res - Objeto de resposta do Express
+ * @returns {Response} Resposta da operação de deleção
  */
 const deletarAluno = (req, res) => {
     try {
-        const aluno = storageService.buscarAlunoPorId(req.params.id);
+        // Valida se o ID foi fornecido
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json({
+                message: 'ID do aluno é obrigatório'
+            });
+        }
 
+        // Converte o ID para número e valida
+        const numericId = Number(id);
+        if (isNaN(numericId)) {
+            return res.status(400).json({
+                message: 'ID do aluno inválido'
+            });
+        }
+
+        // Verifica se o aluno existe
+        const aluno = storageService.buscarAlunoPorId(numericId);
         if (!aluno) {
             return res.status(404).json({
                 message: 'Aluno não encontrado'
             });
         }
 
-        storageService.deletarAluno(req.params.id);
+        // Tenta deletar o aluno
+        const deletado = storageService.deletarAluno(numericId);
+        if (!deletado) {
+            return res.status(500).json({
+                message: 'Erro ao deletar aluno. Operação não realizada.'
+            });
+        }
 
+        // Retorna sucesso com o ID deletado
         res.status(200).json({
-            message: 'Aluno deletado com sucesso'
+            message: 'Aluno deletado com sucesso',
+            id: numericId
         });
     } catch (error) {
         console.error('Erro ao deletar aluno:', error);
