@@ -1,5 +1,6 @@
 # Dependências
 node_modules/
+package-lock.json
 
 # Ambiente
 .env
@@ -36,3 +37,14 @@ Thumbs.db
 # Build
 dist/
 build/
+
+# Arquivos de cache
+.cache/
+.npm/
+
+# Arquivos de debug
+.debug/
+
+# Arquivos de backup
+*.bak
+*.backup

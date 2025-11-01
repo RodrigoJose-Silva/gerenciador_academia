@@ -9,6 +9,7 @@ const alunoController = require('../controllers/alunoController');
 const { alunoValidators, validate } = require('../validators/alunoValidators');
 const { alunoUpdateValidators } = require('../validators/alunoUpdateValidators');
 const { autenticar, verificarPermissao } = require('../middlewares/authMiddleware');
+const { validateId } = require('../middlewares/idValidationMiddleware');
 const { PERMISSOES } = require('../models/Permissions');
 
 /**
@@ -88,7 +89,7 @@ router.get('/', autenticar, verificarPermissao(PERMISSOES.LISTAR_ALUNOS), alunoC
  *         description: Aluno não encontrado
  */
 // GET /api/alunos/:id - Buscar aluno por ID (requer: VISUALIZAR_ALUNO)
-router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_ALUNO), alunoController.buscarAlunoPorId);
+router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_ALUNO), validateId(), alunoController.buscarAlunoPorId);
 
 /**
  * @swagger
@@ -125,7 +126,7 @@ router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_ALUNO), 
  *         description: Aluno não encontrado
  */
 // PUT /api/alunos/:id - Atualizar aluno (requer: EDITAR_ALUNO)
-router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_ALUNO), alunoUpdateValidators, validate, alunoController.atualizarAluno);
+router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_ALUNO), validateId(), alunoUpdateValidators, validate, alunoController.atualizarAluno);
 
 /**
  * @swagger
@@ -151,7 +152,7 @@ router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_ALUNO), alun
  *       404:
  *         description: Aluno não encontrado
  */
-// DELETE /api/alunos/:id - Deletar aluno (requer: EXCLUIR_ALUNO)
-router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_ALUNO), alunoController.deletarAluno);
+// DELETE /api/alunos/:id - Excluir aluno (requer: EXCLUIR_ALUNO)
+router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_ALUNO), validateId(), alunoController.excluirAluno);
 
 module.exports = router;

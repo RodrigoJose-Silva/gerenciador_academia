@@ -9,6 +9,7 @@ const funcionarioController = require('../controllers/funcionarioController');
 const { funcionarioValidators, validate } = require('../validators/funcionarioValidators');
 const { funcionarioUpdateValidators } = require('../validators/funcionarioUpdateValidators');
 const { autenticar, verificarPermissao } = require('../middlewares/authMiddleware');
+const { validateId } = require('../middlewares/idValidationMiddleware');
 const { PERMISSOES } = require('../models/Permissions');
 
 /**
@@ -96,7 +97,7 @@ router.get('/', autenticar, verificarPermissao(PERMISSOES.LISTAR_FUNCIONARIOS), 
  *         description: Funcionário não encontrado
  */
 // GET /api/funcionarios/:id - Buscar funcionário por ID (requer: VISUALIZAR_FUNCIONARIO)
-router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_FUNCIONARIO), funcionarioController.buscarFuncionarioPorId);
+router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_FUNCIONARIO), validateId(), funcionarioController.buscarFuncionarioPorId);
 
 /**
  * @swagger
@@ -161,8 +162,8 @@ router.get('/:id', autenticar, verificarPermissao(PERMISSOES.VISUALIZAR_FUNCIONA
  *       409:
  *         description: Email já cadastrado para outro funcionário
  */
-// PUT /api/funcionarios/:id - Atualizar funcionário (requer: EDITAR_FUNCIONARIO)
-router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_FUNCIONARIO), funcionarioUpdateValidators, validate, funcionarioController.atualizarFuncionario);
+// // PUT /api/funcionarios/:id - Atualizar funcionário
+router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_FUNCIONARIO), validateId(), funcionarioUpdateValidators, validate, funcionarioController.atualizarFuncionario);
 
 /**
  * @swagger
@@ -189,6 +190,6 @@ router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_FUNCIONARIO)
  *         description: Funcionário não encontrado
  */
 // DELETE /api/funcionarios/:id - Deletar funcionário (requer: EXCLUIR_FUNCIONARIO)
-router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_FUNCIONARIO), funcionarioController.deletarFuncionario);
+router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_FUNCIONARIO), validateId(), funcionarioController.deletarFuncionario);
 
 module.exports = router;
