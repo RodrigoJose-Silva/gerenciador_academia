@@ -149,6 +149,17 @@ describe('GET /api/alunos/:id - Buscar Aluno por ID', () => {
 
         expect(response.status).toBe(404);
     });
+    
+    test('Buscar aluno com ID inválido deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const response = await request(app)
+            .get('/api/alunos/123')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+    });
 });
 
 describe('PUT /api/alunos/:id - Atualizar Aluno', () => {
@@ -201,6 +212,22 @@ describe('PUT /api/alunos/:id - Atualizar Aluno', () => {
 
         expect(response.status).toBe(404);
     });
+    
+    test('Atualizar aluno com ID inválido deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('RECEPCIONISTA');
+
+        const dadosAtualizados = {
+            nomeCompleto: 'Nome Atualizado'
+        };
+
+        const response = await request(app)
+            .put('/api/alunos/123')
+            .set('Authorization', `Bearer ${token}`)
+            .send(dadosAtualizados);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
+    });
 });
 
 describe('DELETE /api/alunos/:id - Deletar Aluno', () => {
@@ -252,5 +279,16 @@ describe('DELETE /api/alunos/:id - Deletar Aluno', () => {
             .set('Authorization', `Bearer ${tokenRecep}`);
 
         expect(response.status).toBe(403);
+    });
+    
+    test('Deletar aluno com ID inválido deve retornar 400', async () => {
+        const token = gerarTokenParaTeste('ADMINISTRADOR');
+
+        const response = await request(app)
+            .delete('/api/alunos/123')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('errors');
     });
 });
