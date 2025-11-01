@@ -177,14 +177,20 @@ const atualizarAluno = (req, res) => {
             }
             if (req.body.informacoesMedicas !== undefined) aluno.informacoesMedicas = req.body.informacoesMedicas;
 
-            res.status(200).json({
-                message: 'Aluno atualizado com sucesso'
-            });
+                res.status(200).json({
+                    message: 'Aluno atualizado com sucesso'
+                });
+            } catch (error) {
+                console.error('Erro ao atualizar aluno:', error);
+                res.status(500).json({
+                    message: 'Erro ao atualizar aluno',
+                    error: error.message
+                });
+            }
         } catch (error) {
             console.error('Erro ao atualizar aluno:', error);
             res.status(500).json({
-                message: 'Erro ao atualizar aluno',
-                error: error.message
+                message: 'Erro ao buscar aluno: ' + error.message
             });
         }
     };
