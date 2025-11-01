@@ -1,13 +1,30 @@
 /**
  * Controller de Autenticação
- * Gerencia o processo de autenticação de funcionários com controle de tentativas de login.
+ * Gerencia o processo de autenticação de funcionários com controle de tentativas de login
  * 
- * Funcionalidades:
+ * Este controller implementa um sistema de autenticação com as seguintes características:
+ * 
+ * Funcionalidades principais:
  * - Login de funcionários com validação de credenciais
  * - Controle de tentativas de login (máximo 3 tentativas)
  * - Bloqueio automático de conta após exceder tentativas
- * - Reset de contador de tentativas ao bloquear conta e após login bem-sucedido
- * - Retorno padronizado de erros com message e descrição
+ * - Reset de contador de tentativas após login bem-sucedido
+ * 
+ * Fluxo de autenticação:
+ * 1. Valida as credenciais (userName e senha)
+ * 2. Se as credenciais são válidas:
+ *    - Reseta o contador de tentativas
+ *    - Gera um token JWT
+ *    - Retorna apenas o token e mensagem de sucesso
+ * 3. Se as credenciais são inválidas:
+ *    - Incrementa o contador de tentativas
+ *    - Se atingiu o limite, bloqueia a conta
+ *    - Informa o número de tentativas restantes
+ * 
+ * Segurança:
+ * - Senhas são armazenadas com hash bcrypt
+ * - Tokens JWT são gerados com informações mínimas necessárias
+ * - Sistema de bloqueio automático protege contra força bruta
  */
 
 const bcrypt = require('bcrypt');
@@ -24,13 +41,34 @@ const MAX_TENTATIVAS = 3;
  * - Controle de tentativas de login com bloqueio após 3 falhas
  * - Reset de tentativas após bloqueio ou login bem-sucedido
  * 
+ * @description
+ * Processa a autenticação de um funcionário no sistema.
+ * O processo inclui validação de credenciais, controle de tentativas e
+ * bloqueio automático em caso de múltiplas falhas.
+ * 
  * @param {Request} req - Objeto de requisição Express contendo userName e senha no body
  * @param {Response} res - Objeto de resposta Express
+ * 
  * @returns {Response} 
- * - 200: Login bem-sucedido, retorna { message, token }
- * - 401: Credenciais inválidas, retorna { message, tentativasRestantes }
- * - 403: Conta bloqueada, retorna { message }
- * - 500: Erro interno, retorna { message }
+ * Status 200: Login realizado com sucesso
+ * - Retorna: { message: string, token: string }
+ * - O contador de tentativas é resetado
+ * 
+ * Status 401: Credenciais inválidas
+ * - Retorna: { message: string, tentativasRestantes: number }
+ * - O contador de tentativas é incrementado
+ * 
+ * Status 403: Conta bloqueada
+ * - Retorna: { message: string }
+ * - Ocorre quando excede o número máximo de tentativas
+ * 
+ * Status 500: Erro interno do servidor
+ * - Retorna: { message: string }
+ * 
+ * @security
+ * - A senha é validada usando bcrypt
+ * - O token JWT contém apenas id, userName e perfil do funcionário
+ * - As tentativas são persistidas mesmo após reinicialização do servidor
  */
 const login = async (req, res) => {
     try {

@@ -1,6 +1,25 @@
 /**
  * Controlador de Checkins
  * Gerencia as operações relacionadas aos checkins de alunos na academia
+ * 
+ * Este controlador implementa as seguintes funcionalidades:
+ * - Registro de entrada de alunos (checkin)
+ * - Listagem de todos os checkins
+ * - Busca de checkin específico por ID
+ * - Listagem de checkins por aluno
+ * - Exclusão de registros de checkin
+ * 
+ * Características importantes:
+ * - O ID do checkin é gerado automaticamente
+ * - Data e hora são registradas automaticamente
+ * - O funcionário que registrou o checkin é identificado
+ * - Validações garantem que o aluno existe no sistema
+ * 
+ * Respostas padronizadas:
+ * - Sucesso em criação: Apenas ID
+ * - Erro de validação: Campo específico e mensagem
+ * - Erro de aluno não encontrado: Mensagem específica
+ * - Erro interno: Mensagem descritiva
  */
 
 const { validationResult } = require('express-validator');
@@ -8,31 +27,49 @@ const Checkin = require('../models/Checkin');
 const storageService = require('../services/StorageService');
 
 /**
- * Registra um novo checkin de aluno na academia.
+ * Registra um novo checkin
  * 
- * Esta função processa o registro de entrada/saída com:
- * - Validação da existência do aluno
- * - Registro automático do funcionário responsável (se autenticado)
- * - Retorno simplificado apenas com o ID do checkin criado
+ * @description
+ * Realiza o registro de entrada de um aluno na academia.
+ * Valida a existência do aluno e registra informações automáticas como data/hora.
  * 
- * @param {Request} req - Objeto de requisição com alunoId e dados opcionais
+ * @param {Request} req - Objeto de requisição Express contendo alunoId e observação opcional
  * @param {Response} res - Objeto de resposta Express
+ * 
  * @returns {Response}
- * - 201: Checkin registrado, retorna { id }
- * - 400: Erro de validação, retorna { message, errors }
- * - 404: Aluno não encontrado, retorna { message }
- * - 500: Erro interno, retorna { message }
+ * Status 201: Checkin registrado com sucesso
+ * - Retorna: { id: string }
+ * 
+ * Status 400: Erro de validação
+ * - Retorna: { message: string, field: string }
+ * 
+ * Status 404: Aluno não encontrado
+ * - Retorna: { message: string }
+ * 
+ * Status 500: Erro interno do servidor
+ * - Retorna: { message: string }
+ * 
+ * @example
+ * Exemplo de payload:
+ * {
+ *   "alunoId": "123456789",
+ *   "observacao": "Treino de musculação"
+ * }
+ * 
+ * @security
+ * - Requer autenticação do funcionário
+ * - O ID do funcionário é registrado automaticamente
  */
 const registrarCheckin = (req, res) => {
     try {
         // Verifica se há erros de validação
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            const errorsFormatted = errors.array().map(err => ({
-                message: err.msg,
-                field: err.param
-            }));
-            return res.status(400).json({ message: 'Erro de validação', errors: errorsFormatted });
+            const errorArray = errors.array();
+            return res.status(400).json({
+                message: errorArray[0].msg,
+                field: errorArray[0].path
+            });
         }
 
         const { alunoId } = req.body;
@@ -67,8 +104,7 @@ const registrarCheckin = (req, res) => {
         });
     } catch (error) {
         return res.status(500).json({
-            message: 'Erro ao registrar checkin',
-            error: error.message
+            message: 'Erro ao registrar checkin: ' + error.message
         });
     }
 };

@@ -1,6 +1,24 @@
 /**
  * Controlador de Planos
  * Gerencia as operações relacionadas aos planos da academia
+ * 
+ * Este controlador implementa um CRUD completo para gestão de planos, incluindo:
+ * - Criação de novos planos com validação de dados
+ * - Listagem de todos os planos disponíveis
+ * - Busca de plano específico por ID
+ * - Atualização de dados do plano
+ * - Exclusão de planos
+ * 
+ * Características importantes:
+ * - O ID do plano é gerado automaticamente pelo sistema
+ * - Em caso de sucesso na criação, apenas o ID do novo plano é retornado
+ * - Validações garantem a integridade dos dados do plano
+ * - Controle de acesso baseado em permissões de funcionários
+ * 
+ * Respostas padronizadas:
+ * - Sucesso em criação: Apenas ID
+ * - Erro de validação: Campo específico e mensagem
+ * - Erro interno: Mensagem descritiva
  */
 
 const { validationResult } = require('express-validator');
@@ -8,19 +26,34 @@ const Plano = require('../models/Plano');
 const storageService = require('../services/StorageService');
 
 /**
- * Cria um novo plano na academia.
+ * Cria um novo plano
  * 
- * Esta função valida e processa a criação de um novo plano com:
- * - Validação dos campos obrigatórios e formatos
- * - Geração automática do ID
- * - Retorno simplificado apenas com o ID do plano criado
+ * @description
+ * Realiza o cadastro de um novo plano no sistema.
+ * Valida os dados recebidos e garante a geração automática do ID.
  * 
- * @param {Request} req - Objeto de requisição com dados do plano no body
+ * @param {Request} req - Objeto de requisição Express contendo dados do plano
  * @param {Response} res - Objeto de resposta Express
+ * 
  * @returns {Response}
- * - 201: Plano criado, retorna { id }
- * - 400: Erro de validação, retorna { message, errors }
- * - 500: Erro interno, retorna { message }
+ * Status 201: Plano criado com sucesso
+ * - Retorna: { id: string }
+ * 
+ * Status 400: Erro de validação
+ * - Retorna: { message: string, field: string }
+ * 
+ * Status 500: Erro interno do servidor
+ * - Retorna: { message: string }
+ * 
+ * @example
+ * Exemplo de payload:
+ * {
+ *   "nome": "PLANO_PREMIUM",
+ *   "descricao": "Acesso completo à academia",
+ *   "valor": 150.00,
+ *   "duracao": 30,
+ *   "beneficios": ["Acesso ilimitado", "Aulas"]
+ * }
  */
 const criarPlano = (req, res) => {
     try {

@@ -91,13 +91,10 @@ const funcionarioValidators = [
 const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        const errorsFormatted = errors.array().map(err => ({
-            message: err.msg,
-            field: err.param
-        }));
+        const errorArray = errors.array();
         return res.status(400).json({
-            message: 'Erro de validação',
-            errors: errorsFormatted
+            message: errorArray[0].msg,
+            field: errorArray[0].path
         });
     }
     next();
