@@ -1,12 +1,13 @@
 /**
  * Controller de Autenticação
- * Gerencia o processo de autenticação de funcionários com controle de tentativas de login
+ * Gerencia o processo de autenticação de funcionários com controle de tentativas de login.
  * 
  * Funcionalidades:
  * - Login de funcionários com validação de credenciais
  * - Controle de tentativas de login (máximo 3 tentativas)
  * - Bloqueio automático de conta após exceder tentativas
- * - Reset de contador de tentativas após login bem-sucedido
+ * - Reset de contador de tentativas ao bloquear conta e após login bem-sucedido
+ * - Retorno padronizado de erros com message e descrição
  */
 
 const bcrypt = require('bcrypt');
@@ -16,14 +17,20 @@ const { gerarToken } = require('../middlewares/authMiddleware');
 const MAX_TENTATIVAS = 3;
 
 /**
- * Realiza o login de um funcionário
+ * Realiza o login de um funcionário.
+ * 
+ * Esta função implementa o processo de autenticação com as seguintes características:
+ * - Validação de credenciais (userName e senha)
+ * - Controle de tentativas de login com bloqueio após 3 falhas
+ * - Reset de tentativas após bloqueio ou login bem-sucedido
  * 
  * @param {Request} req - Objeto de requisição Express contendo userName e senha no body
  * @param {Response} res - Objeto de resposta Express
- * @returns {Response} - Retorna status 200 e token JWT se autenticado com sucesso
- *                      - Retorna status 401 se credenciais inválidas
- *                      - Retorna status 403 se conta bloqueada
- *                      - Retorna status 500 em caso de erro interno
+ * @returns {Response} 
+ * - 200: Login bem-sucedido, retorna { message, token }
+ * - 401: Credenciais inválidas, retorna { message, tentativasRestantes }
+ * - 403: Conta bloqueada, retorna { message }
+ * - 500: Erro interno, retorna { message }
  */
 const login = async (req, res) => {
     try {
@@ -33,13 +40,14 @@ const login = async (req, res) => {
         const funcionario = storageService.buscarFuncionarioPorUserName(userName);
 
         // Verifica se o funcionário existe
+        // Retorna mensagem genérica para não revelar se o usuário existe ou não
         if (!funcionario) {
             return res.status(401).json({
                 message: 'Credenciais inválidas'
             });
         }
 
-        // Verifica se o funcionário está bloqueado
+        // Verifica se a conta do funcionário está bloqueada por excesso de tentativas
         if (funcionario.bloqueado) {
             return res.status(403).json({
                 message: 'Conta bloqueada devido a múltiplas tentativas de login inválidas'
@@ -53,12 +61,21 @@ const login = async (req, res) => {
             // Incrementa o contador de tentativas
             funcionario.tentativasLogin += 1;
 
+            // Atualiza as tentativas
+            storageService.atualizarTentativasLoginFuncionario(
+                userName,
+                funcionario.tentativasLogin,
+                false
+            );
+
             // Bloqueia se atingir o máximo de tentativas
             if (funcionario.tentativasLogin >= MAX_TENTATIVAS) {
+                // Reseta as tentativas antes de bloquear
+                funcionario.tentativasLogin = 0;
                 funcionario.bloqueado = true;
                 storageService.atualizarTentativasLoginFuncionario(
                     userName,
-                    funcionario.tentativasLogin,
+                    0,
                     true
                 );
 
@@ -66,13 +83,6 @@ const login = async (req, res) => {
                     message: 'Conta bloqueada. Você excedeu o número máximo de tentativas'
                 });
             }
-
-            // Atualiza as tentativas
-            storageService.atualizarTentativasLoginFuncionario(
-                userName,
-                funcionario.tentativasLogin,
-                false
-            );
 
             const tentativasRestantes = MAX_TENTATIVAS - funcionario.tentativasLogin;
 

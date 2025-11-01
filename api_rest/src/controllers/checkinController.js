@@ -8,16 +8,31 @@ const Checkin = require('../models/Checkin');
 const storageService = require('../services/StorageService');
 
 /**
- * Registra um novo checkin
- * @param {Request} req - Objeto de requisição
- * @param {Response} res - Objeto de resposta
+ * Registra um novo checkin de aluno na academia.
+ * 
+ * Esta função processa o registro de entrada/saída com:
+ * - Validação da existência do aluno
+ * - Registro automático do funcionário responsável (se autenticado)
+ * - Retorno simplificado apenas com o ID do checkin criado
+ * 
+ * @param {Request} req - Objeto de requisição com alunoId e dados opcionais
+ * @param {Response} res - Objeto de resposta Express
+ * @returns {Response}
+ * - 201: Checkin registrado, retorna { id }
+ * - 400: Erro de validação, retorna { message, errors }
+ * - 404: Aluno não encontrado, retorna { message }
+ * - 500: Erro interno, retorna { message }
  */
 const registrarCheckin = (req, res) => {
     try {
         // Verifica se há erros de validação
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+            const errorsFormatted = errors.array().map(err => ({
+                message: err.msg,
+                field: err.param
+            }));
+            return res.status(400).json({ message: 'Erro de validação', errors: errorsFormatted });
         }
 
         const { alunoId } = req.body;
@@ -48,8 +63,7 @@ const registrarCheckin = (req, res) => {
         const checkinSalvo = storageService.adicionarCheckin(novoCheckin);
 
         return res.status(201).json({
-            message: 'Checkin registrado com sucesso',
-            checkin: checkinSalvo.toJSON()
+            id: checkinSalvo.id
         });
     } catch (error) {
         return res.status(500).json({

@@ -31,8 +31,9 @@ describe('POST /api/funcionarios - Cadastro de Funcionário', () => {
 
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('id');
-        expect(response.body).toHaveProperty('userName');
-        expect(response.body.message).toBe('Funcionário cadastrado com sucesso');
+        expect(typeof response.body.id).toBe('number');
+        // Não deve retornar outros campos além do id
+        expect(Object.keys(response.body)).toHaveLength(1);
     });
 
     test('Cadastrar funcionário com userName duplicado deve retornar 409', async () => {
@@ -74,6 +75,15 @@ describe('POST /api/funcionarios - Cadastro de Funcionário', () => {
             .send(dados);
 
         expect(response.status).toBe(400);
+        expect(response.body).toHaveProperty('message', 'Erro de validação');
+        expect(response.body.errors).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    message: expect.any(String),
+                    field: 'senha'
+                })
+            ])
+        );
     });
 
     test('Cadastrar funcionário sem CREF deve retornar 201', async () => {
@@ -90,8 +100,9 @@ describe('POST /api/funcionarios - Cadastro de Funcionário', () => {
 
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('id');
-        expect(response.body).toHaveProperty('userName');
-        expect(response.body.message).toBe('Funcionário cadastrado com sucesso');
+        expect(typeof response.body.id).toBe('number');
+        // Não deve retornar outros campos além do id
+        expect(Object.keys(response.body)).toHaveLength(1);
     });
 
     test('Cadastrar funcionário com email duplicado deve retornar 409', async () => {

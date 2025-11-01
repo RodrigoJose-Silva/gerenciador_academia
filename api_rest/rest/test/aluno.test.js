@@ -32,8 +32,9 @@ describe('POST /api/alunos - Cadastro de Aluno', () => {
 
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('id');
-        expect(response.body).toHaveProperty('nomeCompleto');
-        expect(response.body.message).toBe('Aluno cadastrado com sucesso');
+        expect(typeof response.body.id).toBe('number');
+        // Não deve retornar outros campos além do id
+        expect(Object.keys(response.body)).toHaveLength(1);
     });
 
     test('Cadastrar aluno com email duplicado deve retornar 409', async () => {
@@ -75,7 +76,15 @@ describe('POST /api/alunos - Cadastro de Aluno', () => {
             .send(dados);
 
         expect(response.status).toBe(400);
-        expect(response.body).toHaveProperty('errors');
+        expect(response.body).toHaveProperty('message', 'Erro de validação');
+        expect(response.body.errors).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    message: expect.any(String),
+                    field: expect.any(String)
+                })
+            ])
+        );
     });
 
     test('Cadastrar aluno com estado inválido deve retornar 400', async () => {

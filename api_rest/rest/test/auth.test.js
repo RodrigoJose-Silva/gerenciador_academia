@@ -160,10 +160,15 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
         const dadosFuncionario = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'cadastrarFuncionarioComDadosValidosDeveRetornar201.json'), 'utf8')
         );
-        await request(app)
+        const cadastroResponse = await request(app)
             .post('/api/funcionarios')
             .set('Authorization', `Bearer ${token}`)
             .send(dadosFuncionario);
+
+        // Confirma que cadastro retorna apenas o ID
+        expect(cadastroResponse.status).toBe(201);
+        expect(cadastroResponse.body).toHaveProperty('id');
+        expect(Object.keys(cadastroResponse.body)).toHaveLength(1);
 
         const dadosLoginErrado = JSON.parse(
             fs.readFileSync(path.join(dataPath, 'loginComSenhaInvalidaAumentarTentativas.json'), 'utf8')
@@ -184,6 +189,8 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('token');
+        expect(response.body).toHaveProperty('message', 'Login realizado com sucesso');
+        expect(Object.keys(response.body)).toHaveLength(2);
 
         // Tentativa inválida após login bem-sucedido deve começar do 1
         const response2 = await request(app)
@@ -192,5 +199,6 @@ describe('POST /api/auth/login - Login de Funcionário', () => {
 
         expect(response2.status).toBe(401);
         expect(response2.body.tentativasRestantes).toBe(2);
+        expect(response2.body.message).toBe('Credenciais inválidas');
     });
 });

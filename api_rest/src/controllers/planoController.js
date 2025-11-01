@@ -8,9 +8,19 @@ const Plano = require('../models/Plano');
 const storageService = require('../services/StorageService');
 
 /**
- * Cria um novo plano
- * @param {Request} req - Objeto de requisição
- * @param {Response} res - Objeto de resposta
+ * Cria um novo plano na academia.
+ * 
+ * Esta função valida e processa a criação de um novo plano com:
+ * - Validação dos campos obrigatórios e formatos
+ * - Geração automática do ID
+ * - Retorno simplificado apenas com o ID do plano criado
+ * 
+ * @param {Request} req - Objeto de requisição com dados do plano no body
+ * @param {Response} res - Objeto de resposta Express
+ * @returns {Response}
+ * - 201: Plano criado, retorna { id }
+ * - 400: Erro de validação, retorna { message, errors }
+ * - 500: Erro interno, retorna { message }
  */
 const criarPlano = (req, res) => {
     try {
@@ -31,8 +41,7 @@ const criarPlano = (req, res) => {
         const planoSalvo = storageService.adicionarPlano(novoPlano);
 
         return res.status(201).json({
-            message: 'Plano criado com sucesso',
-            plano: planoSalvo.toJSON()
+            id: planoSalvo.id
         });
     } catch (error) {
         return res.status(500).json({
