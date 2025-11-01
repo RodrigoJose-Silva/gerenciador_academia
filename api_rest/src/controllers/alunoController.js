@@ -67,11 +67,22 @@ const cadastrarAluno = (req, res) => {
 };
 
 /**
- * Lista todos os alunos
+ * Lista todos os alunos cadastrados
+ * 
+ * @description
+ * Retorna uma lista completa de todos os alunos cadastrados no sistema,
+ * incluindo todos os dados de cada aluno com telefone e CPF formatados.
+ * 
+ * @param {Request} req - Objeto de requisição Express
+ * @param {Response} res - Objeto de resposta Express
+ * 
+ * @returns {Response}
+ * - Status 200: Lista de alunos com todos os dados
+ * - Status 500: Erro interno do servidor
  */
 const listarAlunos = (req, res) => {
     try {
-        const alunos = storageService.listarAlunos();
+        const alunos = storageService.listarAlunos().map(aluno => aluno.toFullJSON());
         res.status(200).json(alunos);
     } catch (error) {
         console.error('Erro ao listar alunos:', error);
@@ -83,6 +94,18 @@ const listarAlunos = (req, res) => {
 
 /**
  * Busca um aluno por ID
+ * 
+ * @description
+ * Retorna os dados completos de um aluno específico com base no seu ID,
+ * incluindo todos os dados cadastrais com telefone e CPF formatados.
+ * 
+ * @param {Request} req - Objeto de requisição Express
+ * @param {Response} res - Objeto de resposta Express
+ * 
+ * @returns {Response}
+ * - Status 200: Dados completos do aluno
+ * - Status 404: Aluno não encontrado
+ * - Status 500: Erro interno do servidor
  */
 const buscarAlunoPorId = (req, res) => {
     try {
@@ -94,7 +117,7 @@ const buscarAlunoPorId = (req, res) => {
             });
         }
 
-        res.status(200).json(aluno.toJSON());
+        res.status(200).json(aluno.toFullJSON());
     } catch (error) {
         console.error('Erro ao buscar aluno:', error);
         res.status(500).json({
