@@ -1,0 +1,143 @@
+<%- contentFor('body') %>
+
+    <div class="hero is-small is-primary">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    Dashboard
+                </h1>
+                <h2 class="subtitle">
+                    Bem-vindo, <%= user.userName %>!
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="container">
+            <div class="columns is-multiline">
+                <% if (hasPermission('LISTAR_ALUNOS')) { %>
+                    <div class="column is-4">
+                        <div class="card">
+                            <header class="card-header">
+                                <p class="card-header-title">
+                                    <span class="icon mr-2"><i class="fas fa-users"></i></span>
+                                    Alunos
+                                </p>
+                            </header>
+                            <div class="card-content">
+                                <div class="content">
+                                    <p>Gerencie os alunos da academia</p>
+                                    <div class="buttons">
+                                        <a href="/alunos" class="button is-primary">
+                                            <span class="icon"><i class="fas fa-list"></i></span>
+                                            <span>Listar Alunos</span>
+                                        </a>
+                                        <% if (hasPermission('CRIAR_ALUNO')) { %>
+                                            <a href="/alunos/novo" class="button is-info">
+                                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                                <span>Novo Aluno</span>
+                                            </a>
+                                            <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                        <% if (hasPermission('LISTAR_PLANOS')) { %>
+                            <div class="column is-4">
+                                <div class="card">
+                                    <header class="card-header">
+                                        <p class="card-header-title">
+                                            <span class="icon mr-2"><i class="fas fa-clipboard-list"></i></span>
+                                            Planos
+                                        </p>
+                                    </header>
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <p>Gerencie os planos disponíveis</p>
+                                            <div class="buttons">
+                                                <a href="/planos" class="button is-primary">
+                                                    <span class="icon"><i class="fas fa-list"></i></span>
+                                                    <span>Listar Planos</span>
+                                                </a>
+                                                <% if (hasPermission('CRIAR_PLANO')) { %>
+                                                    <a href="/planos/novo" class="button is-info">
+                                                        <span class="icon"><i class="fas fa-plus"></i></span>
+                                                        <span>Novo Plano</span>
+                                                    </a>
+                                                    <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+
+                                <% if (hasPermission('LISTAR_CHECKINS')) { %>
+                                    <div class="column is-4">
+                                        <div class="card">
+                                            <header class="card-header">
+                                                <p class="card-header-title">
+                                                    <span class="icon mr-2"><i class="fas fa-clock"></i></span>
+                                                    Check-ins
+                                                </p>
+                                            </header>
+                                            <div class="card-content">
+                                                <div class="content">
+                                                    <p>Controle de entrada e saída</p>
+                                                    <div class="buttons">
+                                                        <a href="/checkins" class="button is-primary">
+                                                            <span class="icon"><i class="fas fa-list"></i></span>
+                                                            <span>Ver Check-ins</span>
+                                                        </a>
+                                                        <% if (hasPermission('CRIAR_CHECKIN')) { %>
+                                                            <a href="/checkins/novo" class="button is-info">
+                                                                <span class="icon"><i class="fas fa-plus"></i></span>
+                                                                <span>Novo Check-in</span>
+                                                            </a>
+                                                            <% } %>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+
+                                        <% if (hasPermission('LISTAR_FUNCIONARIOS')) { %>
+                                            <div class="column is-4">
+                                                <div class="card">
+                                                    <header class="card-header">
+                                                        <p class="card-header-title">
+                                                            <span class="icon mr-2"><i
+                                                                    class="fas fa-user-tie"></i></span>
+                                                            Funcionários
+                                                        </p>
+                                                    </header>
+                                                    <div class="card-content">
+                                                        <div class="content">
+                                                            <p>Gerencie a equipe</p>
+                                                            <div class="buttons">
+                                                                <a href="/funcionarios" class="button is-primary">
+                                                                    <span class="icon"><i
+                                                                            class="fas fa-list"></i></span>
+                                                                    <span>Listar Funcionários</span>
+                                                                </a>
+                                                                <% if (hasPermission('CRIAR_FUNCIONARIO')) { %>
+                                                                    <a href="/funcionarios/novo" class="button is-info">
+                                                                        <span class="icon"><i
+                                                                                class="fas fa-plus"></i></span>
+                                                                        <span>Novo Funcionário</span>
+                                                                    </a>
+                                                                    <% } %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <% } %>
+            </div>
+        </div>
+    </div>
