@@ -1,0 +1,43 @@
+<!-- Template para botões de ações nas listagens -->
+<div class="action-buttons">
+    <% if (hasPermission(`EDITAR_${tipo.toUpperCase()}`)) { %>
+        <a href="/<%= tipo %>/editar/<%= item.id %>" class="button is-warning is-small" title="Editar">
+            <span class="icon">
+                <i class="fas fa-edit"></i>
+            </span>
+        </a>
+        <% } %>
+
+            <% if (hasPermission(`EXCLUIR_${tipo.toUpperCase()}`)) { %>
+                <button class="button is-danger is-small" onclick="confirmarExclusao('<%= tipo %>', <%= item.id %>)"
+                    title="Excluir">
+                    <span class="icon">
+                        <i class="fas fa-trash-alt"></i>
+                    </span>
+                </button>
+                <% } %>
+</div>
+
+<script>
+    function confirmarExclusao(tipo, id) {
+        if (confirm('Tem certeza que deseja excluir este registro?')) {
+            fetch(`/api/${tipo}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('Erro ao excluir o registro');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao excluir o registro');
+                });
+        }
+    }
