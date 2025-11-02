@@ -1,6 +1,13 @@
 /**
  * Serviço de comunicação com a API
  * Responsável por realizar as requisições para a API REST
+ * 
+ * Este serviço implementa:
+ * - Comunicação com endpoints da API
+ * - Tratamento de erros de requisição
+ * - Gerenciamento de tokens de autenticação
+ * - Timeout e retry de requisições
+ * - Interceptadores para tratamento de respostas
  */
 
 const axios = require('axios');
@@ -14,7 +21,39 @@ class ApiService {
     this.api = axios.create({
       baseURL: process.env.API_URL || 'http://localhost:3000',
       timeout: 10000,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
     });
+
+    // Interceptador de requisição
+    this.api.interceptors.request.use(
+      (config) => {
+        // Log da requisição em desenvolvimento
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[API Request] ${config.method.toUpperCase()} ${config.url}`);
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    // Interceptador de resposta
+    this.api.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (error) => {
+        // Log do erro em desenvolvimento
+        if (process.env.NODE_ENV === 'development') {
+          console.error('[API Error]', error.response?.data || error.message);
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   /**
@@ -22,7 +61,11 @@ class ApiService {
    * @param {string} token - Token JWT de autenticação
    */
   setAuthToken(token) {
-    this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    if (token) {
+      this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete this.api.defaults.headers.common['Authorization'];
+    }
   }
 
   /**
@@ -87,18 +130,24 @@ class ApiService {
   /**
    * Trata os erros das requisições
    * @param {Error} error - Objeto de erro
-   * @throws {Error} - Lança o erro tratado
+   * @throws {Error} - Lança o erro tratado com mensagem apropriada
    */
   handleError(error) {
     if (error.response) {
-      // A requisição foi feita e o servidor respondeu com um status fora do intervalo 2xx
+      // A requisição foi feita e o servidor respondeu com status fora do intervalo 2xx
       const errorMessage = error.response.data.message || 'Erro na comunicação com o servidor';
       const errorStatus = error.response.status;
-      
+
+      // Tratamento específico para erros de autenticação
+      if (errorStatus === 401) {
+        // Se for erro de autenticação, limpa o token
+        this.setAuthToken(null);
+      }
+
       const customError = new Error(errorMessage);
       customError.status = errorStatus;
       customError.data = error.response.data;
-      
+
       throw customError;
     } else if (error.request) {
       // A requisição foi feita mas não houve resposta
@@ -106,7 +155,7 @@ class ApiService {
       customError.status = 503;
       throw customError;
     } else {
-      // Algo aconteceu na configuração da requisição que causou o erro
+      // Erro na configuração da requisição
       throw new Error('Erro ao processar a requisição: ' + error.message);
     }
   }

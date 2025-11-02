@@ -33,12 +33,19 @@ exports.login = async (req, res) => {
   const { userName, senha } = req.body;
 
   try {
+    // Valida os dados de entrada
+    if (!userName || !senha) {
+      throw new Error('Nome de usuário e senha são obrigatórios');
+    }
+
     // Tenta fazer login na API
-    const response = await ApiService.post('/auth/login', { userName, senha });
+    const response = await ApiService.post('/api/auth/login', { userName, senha });
 
     // Se o login for bem-sucedido, armazena o token e os dados do usuário em cookies
     res.cookie('token', response.token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000 // 1 dia
     });
 
@@ -46,11 +53,14 @@ exports.login = async (req, res) => {
     const [, payload] = response.token.split('.');
     const decodedUser = JSON.parse(Buffer.from(payload, 'base64').toString());
 
+    // Armazena apenas as informações necessárias do usuário
     res.cookie('user', JSON.stringify({
       id: decodedUser.id,
       nome: decodedUser.userName,
       perfil: decodedUser.perfil
     }), {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000 // 1 dia
     });
 
@@ -60,8 +70,22 @@ exports.login = async (req, res) => {
     // Redireciona para a página inicial
     res.redirect('/');
   } catch (error) {
-    // Se ocorrer um erro, renderiza a página de login com a mensagem de erro
-    const errorMessage = error.response?.data?.message || error.message || 'Erro ao fazer login. Verifique suas credenciais.';
+    // Log do erro em desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[Auth Error]', error);
+    }
+
+    // Tratamento específico para diferentes tipos de erro
+    let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
+    if (error.status === 401) {
+      errorMessage = 'Credenciais inválidas. Verifique seu usuário e senha.';
+    } else if (error.status === 403) {
+      errorMessage = 'Conta bloqueada. Entre em contato com o administrador.';
+    } else if (error.status === 503) {
+      errorMessage = 'Servidor indisponível. Tente novamente em alguns instantes.';
+    }
+
+    // Renderiza a página de login com a mensagem de erro apropriada
     res.render('pages/auth/login', {
       title: 'Login',
       error: errorMessage,
