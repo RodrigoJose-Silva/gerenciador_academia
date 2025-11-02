@@ -153,6 +153,6 @@ router.put('/:id', autenticar, verificarPermissao(PERMISSOES.EDITAR_ALUNO), vali
  *         description: Aluno não encontrado
  */
 // DELETE /api/alunos/:id - Excluir aluno (requer: EXCLUIR_ALUNO)
-router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_ALUNO), validateId(), alunoController.excluirAluno);
+router.delete('/:id', autenticar, verificarPermissao(PERMISSOES.EXCLUIR_ALUNO), validateId(), alunoController.deletarAluno);
 
 module.exports = router;

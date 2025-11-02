@@ -13,10 +13,16 @@
 - [Documentação Swagger](#documentação-swagger)
 - [Validações](#validações)
 - [Boas Práticas Implementadas](#boas-práticas-implementadas)
-
 ## 🎯 Sobre o Projeto
 
 API REST desenvolvida para gerenciamento de uma academia, permitindo cadastro de alunos, funcionários, planos, registro de checkins e autenticação de funcionários. A API segue boas práticas de desenvolvimento, Clean Code e possui cobertura de testes com MOCK.
+
+### Melhorias Recentes
+- Correção de bugs na rota de exclusão de alunos
+- Aprimoramento da documentação de código
+- Melhoria na formatação e consistência do código
+- Adição de testes para validar as rotas de alunos
+- Padronização dos comentários e documentação
 
 ### Principais Funcionalidades
 - Cadastro e gerenciamento de alunos
@@ -658,6 +664,17 @@ http://localhost:3000/api-docs
 ```
 
 A documentação interativa permite testar todos os endpoints diretamente pelo navegador. Use o botão "Authorize" (ícone de cadeado) para inserir seu token JWT e testar endpoints protegidos.
+
+## 🔍 Boas Práticas Implementadas
+
+### Clean Code
+- **Nomenclatura clara**: Nomes de variáveis e funções que revelam sua intenção
+- **Funções pequenas e focadas**: Cada função realiza apenas uma tarefa específica
+- **Comentários significativos**: Documentação JSDoc para todas as funções
+- **Tratamento de erros consistente**: Uso de try/catch com mensagens informativas
+- **Formatação padronizada**: Indentação e espaçamento consistentes
+- **Princípio DRY**: Evitamos duplicação de código com funções reutilizáveis
+- **Testes automatizados**: Testes unitários e de integração para validar comportamentos
 
 ## ✅ Validações
 
