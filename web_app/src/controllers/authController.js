@@ -65,7 +65,7 @@ exports.login = async (req, res) => {
     res.render('pages/auth/login', {
       title: 'Login',
       error: errorMessage,
-      email
+      userName: req.body.userName
     });
   }
 };
