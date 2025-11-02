@@ -23,7 +23,7 @@ describe('Autenticação', () => {
     const response = await request(app)
       .post('/auth/login')
       .send({
-        email: 'admin@academia.com',
+        userName: 'admin',
         senha: 'senha123'
       });
 
@@ -42,7 +42,7 @@ describe('Autenticação', () => {
     const response = await request(app)
       .post('/auth/login')
       .send({
-        email: 'usuario@invalido.com',
+        userName: 'usuarioinvalido',
         senha: 'senhaerrada'
       });
 
