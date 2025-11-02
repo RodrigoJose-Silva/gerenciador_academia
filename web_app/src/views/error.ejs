@@ -1,0 +1,14 @@
+<div class="container mt-5">
+  <div class="notification is-danger">
+    <h1 class="title">Erro</h1>
+    <p class="subtitle"><%= message %></p>
+    
+    <% if (error && error.stack) { %>
+      <div class="content">
+        <pre><%= error.stack %></pre>
+      </div>
+    <% } %>
+    
+    <a href="/" class="button is-light mt-4">Voltar para a página inicial</a>
+  </div>
+</div>

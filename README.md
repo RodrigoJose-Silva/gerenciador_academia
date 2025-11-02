@@ -1,16 +1,17 @@
 # Gerenciador de Academia
 
-Sistema completo de gerenciamento para academias, incluindo cadastro de alunos, funcionários e sistema de autenticação e autorização.
+Sistema completo de gerenciamento para academias, incluindo cadastro de alunos, funcionários e sistema de autenticação e autorização, com API REST e interface web.
 
 ## 📋 Sobre o Projeto
 
-O Gerenciador de Academia é uma solução desenvolvida para facilitar o gerenciamento de academias, oferecendo funcionalidades para controle de alunos, funcionários e sistemas de autenticação baseados em perfis de usuário.
+O Gerenciador de Academia é uma solução desenvolvida para facilitar o gerenciamento de academias, oferecendo funcionalidades para controle de alunos, funcionários e sistemas de autenticação baseados em perfis de usuário. O sistema é composto por uma API REST e uma aplicação web que se integra a essa API.
 
 ## 🏗 Estrutura do Projeto
 
 ```
 gerenciador_academia/
 ├── api_rest/           # API REST do sistema
+├── web_app/            # Aplicação web (interface de usuário)
 ├── artfacts/           # Documentos de requisitos e arquitetura
 └── README.md           # Este arquivo
 ```
@@ -37,9 +38,26 @@ API REST desenvolvida com Node.js e Express.js, fornecendo endpoints completos p
 - ✅ Senhas hashadas com bcrypt
 - ✅ Bloqueio de conta após 3 tentativas de login inválidas
 
+### Aplicação Web (`web_app/`)
+
+Interface web desenvolvida com Node.js, Express e EJS, que se integra com a API REST:
+
+- **Interface Amigável**: Design moderno e responsivo com Bulma CSS
+- **Gestão Completa**: Interfaces para todas as funcionalidades da API
+- **Autenticação**: Sistema de login integrado com a API
+- **Tratamento de Erros**: Exibição amigável de erros para o usuário
+
+**Características:**
+- ✅ Arquitetura MVC adaptada para aplicações web
+- ✅ Templates EJS para renderização de páginas
+- ✅ Integração completa com a API REST
+- ✅ Design responsivo com Bulma CSS
+- ✅ Tratamento centralizado de erros
+- ✅ Testes automatizados com Jest e Nock
+
 ## 🛠 Tecnologias Utilizadas
 
-### Backend
+### Backend (API)
 - **Node.js** - Runtime JavaScript
 - **Express.js** - Framework web
 - **JWT** - Autenticação
@@ -47,9 +65,16 @@ API REST desenvolvida com Node.js e Express.js, fornecendo endpoints completos p
 - **express-validator** - Validação
 - **Swagger** - Documentação
 
+### Frontend (Web App)
+- **EJS** - Template engine
+- **Bulma CSS** - Framework CSS
+- **Axios** - Cliente HTTP
+- **Cookie-parser** - Manipulação de cookies
+
 ### Testes
 - **Jest** - Framework de testes
 - **Supertest** - Testes de integração
+- **Nock** - Mock de requisições HTTP
 
 ### Desenvolvimento
 - **Nodemon** - Auto-reload
@@ -78,25 +103,56 @@ cd api_rest
 npm install
 ```
 
-3. Configure as variáveis de ambiente (opcional):
+3. Configure as variáveis de ambiente da API:
 ```bash
 cp env.example .env
 # Edite o arquivo .env conforme necessário
 ```
 
+4. Instale as dependências da aplicação web:
+```bash
+cd ../web_app
+npm install
+```
+
+5. Configure as variáveis de ambiente da aplicação web:
+```bash
+# Crie um arquivo .env com o seguinte conteúdo:
+PORT=4000
+API_URL=http://localhost:3000
+```
+
 ### Execução
 
-#### Modo Desenvolvimento
+#### API REST
+
+**Modo Desenvolvimento**
 ```bash
 cd api_rest
 npm run dev
 ```
 
-O servidor iniciará em `http://localhost:3000`
+O servidor da API iniciará em `http://localhost:3000`
 
-#### Modo Produção
+**Modo Produção**
 ```bash
 cd api_rest
+npm start
+```
+
+#### Aplicação Web
+
+**Modo Desenvolvimento**
+```bash
+cd web_app
+npm run dev
+```
+
+A aplicação web iniciará em `http://localhost:4000`
+
+**Modo Produção**
+```bash
+cd web_app
 npm start
 ```
 

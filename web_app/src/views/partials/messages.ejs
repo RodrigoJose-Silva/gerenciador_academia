@@ -1,0 +1,25 @@
+<% if (locals.success) { %>
+  <div class="notification is-success">
+    <button class="delete"></button>
+    <%= success %>
+  </div>
+<% } %>
+
+<% if (locals.error) { %>
+  <div class="notification is-danger">
+    <button class="delete"></button>
+    <%= error %>
+  </div>
+<% } %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Adiciona funcionalidade para fechar as notificações
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+      const $notification = $delete.parentNode;
+      $delete.addEventListener('click', () => {
+        $notification.parentNode.removeChild($notification);
+      });
+    });
+  });
+</script>

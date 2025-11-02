@@ -1,0 +1,9 @@
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFkbWluQGFjYWRlbWlhLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTYxNjc2MjM0NX0.example-token",
+  "user": {
+    "id": "1",
+    "nome": "Administrador",
+    "email": "admin@academia.com",
+    "role": "admin"
+  }
+}
