@@ -6,6 +6,7 @@
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const expressLayouts = require('express-ejs-layouts');
 require('dotenv').config();
 
 // Importação das rotas
@@ -22,6 +23,10 @@ const PORT = process.env.PORT || 4001; // Alterado para porta 4001 para evitar c
 // Configuração do EJS como template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(expressLayouts);
+app.set('layout', 'layouts/main');
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
 
 // Middlewares
 app.use(express.json());
