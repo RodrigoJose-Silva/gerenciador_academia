@@ -36,6 +36,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Middleware para verificar autenticação
 const authMiddleware = require('./middlewares/authMiddleware');
+const permissionsMiddleware = require('./middlewares/permissionsMiddleware');
+
+// Carrega as rotas
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // Middleware para disponibilizar variáveis globais para as views
 app.use((req, res, next) => {
@@ -44,9 +48,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Adiciona o middleware de permissões
+app.use(permissionsMiddleware);
+
 // Rotas
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
+app.use('/dashboard', authMiddleware, dashboardRoutes);
 app.use('/alunos', authMiddleware, alunosRoutes);
 app.use('/funcionarios', authMiddleware, funcionariosRoutes);
 app.use('/planos', authMiddleware, planosRoutes);
@@ -55,17 +63,17 @@ app.use('/checkins', authMiddleware, checkinRoutes);
 // Middleware para tratamento de erros
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).render('error', { 
-    title: 'Erro', 
-    message: 'Ocorreu um erro no servidor', 
+  res.status(500).render('error', {
+    title: 'Erro',
+    message: 'Ocorreu um erro no servidor',
     error: process.env.NODE_ENV === 'development' ? err : {}
   });
 });
 
 // Middleware para rotas não encontradas
 app.use((req, res) => {
-  res.status(404).render('error', { 
-    title: 'Página não encontrada', 
+  res.status(404).render('error', {
+    title: 'Página não encontrada',
     message: 'A página que você está procurando não existe',
     error: {}
   });

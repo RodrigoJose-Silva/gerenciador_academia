@@ -67,8 +67,8 @@ exports.login = async (req, res) => {
     // Configura o token para as próximas requisições
     ApiService.setAuthToken(response.token);
 
-    // Redireciona para a página inicial
-    res.redirect('/');
+    // Redireciona para o dashboard
+    res.redirect('/dashboard');
   } catch (error) {
     // Log do erro em desenvolvimento
     if (process.env.NODE_ENV === 'development') {
