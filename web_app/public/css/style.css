@@ -1,0 +1,74 @@
+/* Estilos personalizados para o Gerenciador de Academia */
+
+/* Estilo para o background com imagens de academia */
+body {
+  background-image: url('/img/gym-background.svg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ajuste para o conteúdo principal */
+.section {
+  flex: 1;
+}
+
+/* Estilo para os cards */
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px);
+}
+
+/* Estilo para o hero na página inicial */
+.hero.is-primary {
+  background: linear-gradient(135deg, #00d1b2, #209cee);
+}
+
+/* Estilo para tabelas */
+.table-container {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Estilo para formulários */
+.form-card {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  padding: 2rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para o footer */
+.footer {
+  background-color: #f5f5f5;
+  padding: 2rem 1.5rem;
+  margin-top: auto;
+}
+
+/* Estilo para ícones */
+.icon-text {
+  display: flex;
+  align-items: center;
+}
+
+.icon-text .icon {
+  margin-right: 0.5rem;
+}
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
+  .columns {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
