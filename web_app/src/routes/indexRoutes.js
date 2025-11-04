@@ -5,13 +5,15 @@
 
 const express = require('express');
 const router = express.Router();
+const redirectIfAuthenticated = require('../middlewares/redirectIfAuthenticated');
 
 /**
  * Rota para a página inicial
  * Renderiza a página inicial da aplicação
+ * Redireciona para o dashboard se o usuário já estiver logado
  */
-router.get('/', (req, res) => {
-  res.render('pages/index', { 
+router.get('/', redirectIfAuthenticated, (req, res) => {
+  res.render('pages/index', {
     title: 'Início',
     user: req.cookies.user ? JSON.parse(req.cookies.user) : null
   });

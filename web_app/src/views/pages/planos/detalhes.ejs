@@ -1,0 +1,198 @@
+<%- contentFor('body') %>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </span>
+                <span>
+                    <%= plano.nome %>
+                </span>
+            </span>
+        </h1>
+
+        <% if (locals.success) { %>
+            <div class="notification is-success">
+                <button class="delete"></button>
+                <%= success %>
+            </div>
+            <% } %>
+
+                <% if (locals.error) { %>
+                    <div class="notification is-danger">
+                        <button class="delete"></button>
+                        <%= error %>
+                    </div>
+                    <% } %>
+
+                        <div class="box">
+                            <div class="buttons">
+                                <% if (hasPermission('EDITAR_PLANO')) { %>
+                                    <a href="/planos/<%= plano.id %>/editar" class="button is-warning">
+                                        <span class="icon">
+                                            <i class="fas fa-edit"></i>
+                                        </span>
+                                        <span>Editar</span>
+                                    </a>
+                                    <% } %>
+                                        <% if (hasPermission('EXCLUIR_PLANO')) { %>
+                                            <form action="/planos/<%= plano.id %>/excluir" method="POST"
+                                                class="is-inline">
+                                                <button type="submit" class="button is-danger"
+                                                    onclick="return confirm('Tem certeza que deseja excluir este plano?')">
+                                                    <span class="icon">
+                                                        <i class="fas fa-trash"></i>
+                                                    </span>
+                                                    <span>Excluir</span>
+                                                </button>
+                                            </form>
+                                            <% } %>
+                                                <a href="/planos" class="button is-light">Voltar</a>
+                            </div>
+
+                            <hr>
+
+                            <div class="columns">
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Nome do Plano</label>
+                                        <p>
+                                            <%= plano.nome %>
+                                        </p>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Modalidades</label>
+                                        <div class="tags">
+                                            <% plano.modalidades.forEach(modalidade=> { %>
+                                                <span class="tag is-info is-medium">
+                                                    <%= modalidade %>
+                                                </span>
+                                                <% }) %>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Valor</label>
+                                        <p class="is-size-4">R$ <%= plano.valor.toFixed(2) %>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Duração</label>
+                                        <p>
+                                            <%= plano.duracao %> dias
+                                        </p>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Status</label>
+                                        <p>
+                                            <span class="tag is-medium <%= plano.ativo ? 'is-success' : 'is-danger' %>">
+                                                <%= plano.ativo ? 'Ativo' : 'Inativo' %>
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Data de Cadastro</label>
+                                        <p>
+                                            <%= new Date(plano.dataCadastro).toLocaleDateString('pt-BR') %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Benefícios</label>
+                                <div class="content">
+                                    <ul>
+                                        <% plano.beneficios.forEach(beneficio=> { %>
+                                            <li>
+                                                <%= beneficio %>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <% if (hasPermission('LISTAR_ALUNOS')) { %>
+                                <hr>
+
+                                <h2 class="subtitle">
+                                    <span class="icon-text">
+                                        <span class="icon">
+                                            <i class="fas fa-users"></i>
+                                        </span>
+                                        <span>Alunos com este plano</span>
+                                    </span>
+                                </h2>
+
+                                <% if (plano.alunos && plano.alunos.length> 0) { %>
+                                    <div class="table-container">
+                                        <table class="table is-fullwidth is-striped is-hoverable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nome</th>
+                                                    <th>Email</th>
+                                                    <th>Telefone</th>
+                                                    <th>Status</th>
+                                                    <th>Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% plano.alunos.forEach(aluno=> { %>
+                                                    <tr>
+                                                        <td>
+                                                            <a href="/alunos/<%= aluno.id %>">
+                                                                <%= aluno.nomeCompleto %>
+                                                            </a>
+                                                        </td>
+                                                        <td>
+                                                            <%= aluno.email %>
+                                                        </td>
+                                                        <td>
+                                                            <%= aluno.telefone %>
+                                                        </td>
+                                                        <td>
+                                                            <span
+                                                                class="tag <%= aluno.ativo ? 'is-success' : 'is-danger' %>">
+                                                                <%= aluno.ativo ? 'Ativo' : 'Inativo' %>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/alunos/<%= aluno.id %>"
+                                                                class="button is-small is-info is-light">
+                                                                <span class="icon">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="notification is-info is-light">
+                                            Nenhum aluno associado a este plano.
+                                        </div>
+                                        <% } %>
+                                            <% } %>
+                        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funcionalidade para fechar as notificações
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>

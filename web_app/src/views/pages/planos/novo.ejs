@@ -1,0 +1,150 @@
+<%- contentFor('body') %>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span>Novo Plano</span>
+            </span>
+        </h1>
+
+        <% if (locals.error) { %>
+            <div class="notification is-danger">
+                <button class="delete"></button>
+                <%= error %>
+            </div>
+            <% } %>
+
+                <div class="box">
+                    <form action="/planos" method="POST">
+                        <div class="field">
+                            <label class="label">Nome do Plano</label>
+                            <div class="control">
+                                <input class="input" type="text" name="nome" value="<%= locals.plano?.nome || '' %>"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Modalidades</label>
+                            <div class="control">
+                                <input class="input" type="text" name="modalidades"
+                                    value="<%= locals.plano?.modalidades ? plano.modalidades.join(', ') : '' %>"
+                                    placeholder="Ex: Musculação, Pilates, Dança" required>
+                                <p class="help">Separe as modalidades por vírgula</p>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Valor (R$)</label>
+                            <div class="control">
+                                <input class="input" type="number" name="valor" value="<%= locals.plano?.valor || '' %>"
+                                    step="0.01" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Duração (dias)</label>
+                            <div class="control">
+                                <input class="input" type="number" name="duracao"
+                                    value="<%= locals.plano?.duracao || 30 %>" min="1" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Benefícios</label>
+                            <div class="control">
+                                <textarea class="textarea" name="beneficios" rows="3"
+                                    required><%= locals.plano?.beneficios ? plano.beneficios.join('\n') : '' %></textarea>
+                                <p class="help">Um benefício por linha</p>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Status</label>
+                            <div class="control">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="ativo" <%=locals.plano?.ativo ? 'checked' : '' %>
+                                    checked>
+                                    Ativo
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="submit" class="button is-primary">
+                                    <span class="icon">
+                                        <i class="fas fa-save"></i>
+                                    </span>
+                                    <span>Salvar</span>
+                                </button>
+                            </div>
+                            <div class="control">
+                                <a href="/planos" class="button is-light">Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funcionalidade para fechar as notificações
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+
+            // Converte o valor do formulário para o formato correto antes do envio
+            const form = document.querySelector('form');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+
+                // Converte as modalidades de string para array
+                data.modalidades = data.modalidades
+                    .split(',')
+                    .map(m => m.trim())
+                    .filter(m => m);
+
+                // Converte os benefícios de string para array
+                data.beneficios = data.beneficios
+                    .split('\n')
+                    .map(b => b.trim())
+                    .filter(b => b);
+
+                // Converte valor para número
+                data.valor = parseFloat(data.valor);
+
+                // Converte duração para número
+                data.duracao = parseInt(data.duracao);
+
+                // Converte ativo para boolean
+                data.ativo = !!formData.get('ativo');
+
+                // Envia o formulário com os dados convertidos
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(response => {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                    });
+            });
+        });
+    </script>

@@ -46,6 +46,10 @@ Interface web desenvolvida com Node.js, Express e EJS, que se integra com a API 
 - **Gestão Completa**: Interfaces para todas as funcionalidades da API
 - **Autenticação**: Sistema de login integrado com a API
 - **Tratamento de Erros**: Exibição amigável de erros para o usuário
+- **Menus Interativos**: Sistema de menus hover com submenus por funcionalidade
+- **Proteção de Rotas**: Redirecionamento automático para dashboard quando logado
+- **Ações Rápidas**: Botões de edição e exclusão em todas as listagens
+- **Interface Contextual**: Exibição de funcionalidades baseada em permissões
 
 **Características:**
 - ✅ Arquitetura MVC adaptada para aplicações web
@@ -236,12 +240,16 @@ Para detalhes completos de permissões, consulte a documentação da API.
 Possíveis melhorias futuras:
 - [ ] Integração com banco de dados (PostgreSQL/MySQL)
 - [ ] Sistema de recuperação de senha
-- [ ] Geração de relatórios
-- [ ] Interface web (frontend)
+- [ ] Geração de relatórios em PDF
+- [x] Interface web responsiva
 - [ ] Sistema de pagamentos
-- [ ] Controle de planos e mensalidades
+- [x] Controle de planos e mensalidades
 - [ ] Sistema de fichas de treino
 - [ ] Notificações
+- [ ] Modo escuro
+- [ ] Gráficos de frequência
+- [ ] Backup automático
+- [ ] Sistema de avisos e comunicados
 
 ## 🤝 Contribuindo
 

@@ -15,21 +15,117 @@
     <div id="navbarBasic" class="navbar-menu">
       <div class="navbar-start">
         <% if (locals.isAuthenticated) { %>
-          <a class="navbar-item" href="/alunos">
-            <i class="fas fa-users mr-2"></i> Alunos
-          </a>
-          <a class="navbar-item" href="/planos">
-            <i class="fas fa-clipboard-list mr-2"></i> Planos
-          </a>
-          <a class="navbar-item" href="/checkins">
-            <i class="fas fa-check-circle mr-2"></i> Check-ins
-          </a>
-          <% if (locals.user && locals.user.role === 'admin') { %>
-            <a class="navbar-item" href="/funcionarios">
-              <i class="fas fa-user-tie mr-2"></i> Funcionários
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link">
+              <i class="fas fa-users mr-2"></i> Alunos
             </a>
-          <% } %>
-        <% } %>
+            <div class="navbar-dropdown">
+              <a class="navbar-item" href="/alunos">
+                <i class="fas fa-list mr-2"></i> Listar Alunos
+              </a>
+              <% if (hasPermission('CRIAR_ALUNO')) { %>
+                <a class="navbar-item" href="/alunos/novo">
+                  <i class="fas fa-plus mr-2"></i> Novo Aluno
+                </a>
+                <% } %>
+                  <% if (hasPermission('EDITAR_ALUNO') || hasPermission('EXCLUIR_ALUNO')) { %>
+                    <hr class="navbar-divider">
+                    <% if (hasPermission('EDITAR_ALUNO')) { %>
+                      <a class="navbar-item is-info" href="/alunos">
+                        <i class="fas fa-edit mr-2"></i> Editar Alunos
+                      </a>
+                      <% } %>
+                        <% if (hasPermission('EXCLUIR_ALUNO')) { %>
+                          <a class="navbar-item is-danger" href="/alunos">
+                            <i class="fas fa-trash mr-2"></i> Excluir Alunos
+                          </a>
+                          <% } %>
+                            <% } %>
+            </div>
+          </div>
+
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link">
+              <i class="fas fa-clipboard-list mr-2"></i> Planos
+            </a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item" href="/planos">
+                <i class="fas fa-list mr-2"></i> Listar Planos
+              </a>
+              <% if (hasPermission('CRIAR_PLANO')) { %>
+                <a class="navbar-item" href="/planos/novo">
+                  <i class="fas fa-plus mr-2"></i> Novo Plano
+                </a>
+                <% } %>
+                  <% if (hasPermission('EDITAR_PLANO') || hasPermission('EXCLUIR_PLANO')) { %>
+                    <hr class="navbar-divider">
+                    <% if (hasPermission('EDITAR_PLANO')) { %>
+                      <a class="navbar-item is-info" href="/planos">
+                        <i class="fas fa-edit mr-2"></i> Editar Planos
+                      </a>
+                      <% } %>
+                        <% if (hasPermission('EXCLUIR_PLANO')) { %>
+                          <a class="navbar-item is-danger" href="/planos">
+                            <i class="fas fa-trash mr-2"></i> Excluir Planos
+                          </a>
+                          <% } %>
+                            <% } %>
+            </div>
+          </div>
+
+          <div class="navbar-item has-dropdown">
+            <a class="navbar-link">
+              <i class="fas fa-check-circle mr-2"></i> Check-ins
+            </a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item" href="/checkins">
+                <i class="fas fa-list mr-2"></i> Listar Check-ins
+              </a>
+              <% if (hasPermission('CRIAR_CHECKIN')) { %>
+                <a class="navbar-item" href="/checkins/novo">
+                  <i class="fas fa-plus mr-2"></i> Novo Check-in
+                </a>
+                <% } %>
+                  <% if (hasPermission('EXCLUIR_CHECKIN')) { %>
+                    <hr class="navbar-divider">
+                    <a class="navbar-item is-danger" href="/checkins">
+                      <i class="fas fa-trash mr-2"></i> Excluir Check-ins
+                    </a>
+                    <% } %>
+            </div>
+          </div>
+
+          <% if (locals.user && locals.user.role==='admin' ) { %>
+            <div class="navbar-item has-dropdown">
+              <a class="navbar-link">
+                <i class="fas fa-user-tie mr-2"></i> Funcionários
+              </a>
+              <div class="navbar-dropdown">
+                <a class="navbar-item" href="/funcionarios">
+                  <i class="fas fa-list mr-2"></i> Listar Funcionários
+                </a>
+                <% if (hasPermission('CRIAR_FUNCIONARIO')) { %>
+                  <a class="navbar-item" href="/funcionarios/novo">
+                    <i class="fas fa-plus mr-2"></i> Novo Funcionário
+                  </a>
+                  <% } %>
+                    <% if (hasPermission('EDITAR_FUNCIONARIO') || hasPermission('EXCLUIR_FUNCIONARIO')) { %>
+                      <hr class="navbar-divider">
+                      <% if (hasPermission('EDITAR_FUNCIONARIO')) { %>
+                        <a class="navbar-item is-info" href="/funcionarios">
+                          <i class="fas fa-edit mr-2"></i> Editar Funcionários
+                        </a>
+                        <% } %>
+                          <% if (hasPermission('EXCLUIR_FUNCIONARIO')) { %>
+                            <a class="navbar-item is-danger" href="/funcionarios">
+                              <i class="fas fa-trash mr-2"></i> Excluir Funcionários
+                            </a>
+                            <% } %>
+                              <% } %>
+              </div>
+            </div>
+            <% } %>
+              <% } %>
       </div>
 
       <div class="navbar-end">
@@ -37,16 +133,17 @@
           <div class="buttons">
             <% if (locals.isAuthenticated) { %>
               <span class="navbar-item">
-                <i class="fas fa-user mr-2"></i> <%= locals.user ? locals.user.nome : 'Usuário' %>
+                <i class="fas fa-user mr-2"></i>
+                <%= locals.user ? locals.user.nome : 'Usuário' %>
               </span>
               <a class="button is-light" href="/auth/logout">
                 <i class="fas fa-sign-out-alt mr-2"></i> Sair
               </a>
-            <% } else { %>
-              <a class="button is-primary" href="/auth/login">
-                <i class="fas fa-sign-in-alt mr-2"></i> Entrar
-              </a>
-            <% } %>
+              <% } else { %>
+                <a class="button is-primary" href="/auth/login">
+                  <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+                </a>
+                <% } %>
           </div>
         </div>
       </div>

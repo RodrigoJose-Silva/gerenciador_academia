@@ -1,0 +1,125 @@
+<%- contentFor('body') %>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </span>
+                <span>Planos</span>
+            </span>
+        </h1>
+
+        <% if (locals.success) { %>
+            <div class="notification is-success">
+                <button class="delete"></button>
+                <%= success %>
+            </div>
+            <% } %>
+
+                <div class="box">
+                    <% if (hasPermission('CRIAR_PLANO')) { %>
+                        <div class="buttons">
+                            <a href="/planos/novo" class="button is-primary">
+                                <span class="icon">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                                <span>Novo Plano</span>
+                            </a>
+                        </div>
+                        <% } %>
+
+                            <% if (planos && planos.length> 0) { %>
+                                <div class="table-container">
+                                    <table class="table is-fullwidth is-striped is-hoverable">
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Modalidades</th>
+                                                <th>Valor</th>
+                                                <th>Duração</th>
+                                                <th>Status</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% planos.forEach(plano=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <a href="/planos/<%= plano.id %>">
+                                                            <%= plano.nome %>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <% plano.modalidades.forEach(modalidade=> { %>
+                                                            <span class="tag is-info is-light mr-1">
+                                                                <%= modalidade %>
+                                                            </span>
+                                                            <% }) %>
+                                                    </td>
+                                                    <td>R$ <%= plano.valor.toFixed(2) %>
+                                                    </td>
+                                                    <td>
+                                                        <%= plano.duracao %> dias
+                                                    </td>
+                                                    <td>
+                                                        <span
+                                                            class="tag <%= plano.ativo ? 'is-success' : 'is-danger' %>">
+                                                            <%= plano.ativo ? 'Ativo' : 'Inativo' %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="buttons are-small">
+                                                            <a href="/planos/<%= plano.id %>"
+                                                                class="button is-info is-light" title="Ver detalhes">
+                                                                <span class="icon">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </span>
+                                                            </a>
+                                                            <% if (hasPermission('EDITAR_PLANO')) { %>
+                                                                <a href="/planos/<%= plano.id %>/editar"
+                                                                    class="button is-warning is-light" title="Editar">
+                                                                    <span class="icon">
+                                                                        <i class="fas fa-edit"></i>
+                                                                    </span>
+                                                                </a>
+                                                                <% } %>
+                                                                    <% if (hasPermission('EXCLUIR_PLANO')) { %>
+                                                                        <form action="/planos/<%= plano.id %>/excluir"
+                                                                            method="POST" class="is-inline">
+                                                                            <button type="submit"
+                                                                                class="button is-danger is-light"
+                                                                                title="Excluir"
+                                                                                onclick="return confirm('Tem certeza que deseja excluir este plano?')">
+                                                                                <span class="icon">
+                                                                                    <i class="fas fa-trash"></i>
+                                                                                </span>
+                                                                            </button>
+                                                                        </form>
+                                                                        <% } %>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } else { %>
+                                    <div class="notification is-info is-light">
+                                        Nenhum plano cadastrado.
+                                    </div>
+                                    <% } %>
+                </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funcionalidade para fechar as notificações
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>
