@@ -1,0 +1,83 @@
+<%- contentFor('body') %>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fas fa-plus"></i>
+                </span>
+                <span>Novo Check-in</span>
+            </span>
+        </h1>
+
+        <% if (locals.error) { %>
+            <div class="notification is-danger">
+                <button class="delete"></button>
+                <%= error %>
+            </div>
+            <% } %>
+
+                <div class="box">
+                    <form action="/checkins" method="POST">
+                        <div class="field">
+                            <label class="label">Aluno</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select name="alunoId" required>
+                                        <option value="">Selecione um aluno</option>
+                                        <% alunos.forEach(aluno=> { %>
+                                            <% if (aluno.ativo) { %>
+                                                <option value="<%= aluno.id %>" <%=locals.checkin?.alunoId===aluno.id
+                                                    ? 'selected' : '' %>>
+                                                    <%= aluno.nomeCompleto %> - <%= aluno.plano?.nome || 'Sem plano' %>
+                                                </option>
+                                                <% } %>
+                                                    <% }) %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Observação (opcional)</label>
+                            <div class="control">
+                                <textarea class="textarea" name="observacao"
+                                    rows="3"><%= locals.checkin?.observacao || '' %></textarea>
+                            </div>
+                        </div>
+
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="submit" class="button is-primary">
+                                    <span class="icon">
+                                        <i class="fas fa-save"></i>
+                                    </span>
+                                    <span>Registrar Check-in</span>
+                                </button>
+                            </div>
+                            <div class="control">
+                                <a href="/checkins" class="button is-light">Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funcionalidade para fechar as notificações
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+
+            // Inicializa o campo de seleção de aluno com o valor da URL se existir
+            const urlParams = new URLSearchParams(window.location.search);
+            const alunoId = urlParams.get('alunoId');
+            if (alunoId) {
+                document.querySelector('select[name="alunoId"]').value = alunoId;
+            }
+        });
+    </script>

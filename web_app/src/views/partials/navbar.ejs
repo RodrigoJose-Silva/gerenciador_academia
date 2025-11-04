@@ -28,6 +28,19 @@
                   <i class="fas fa-plus mr-2"></i> Novo Aluno
                 </a>
                 <% } %>
+                  <% if (hasPermission('EDITAR_ALUNO') || hasPermission('EXCLUIR_ALUNO')) { %>
+                    <hr class="navbar-divider">
+                    <% if (hasPermission('EDITAR_ALUNO')) { %>
+                      <a class="navbar-item is-info" href="/alunos">
+                        <i class="fas fa-edit mr-2"></i> Editar Alunos
+                      </a>
+                      <% } %>
+                        <% if (hasPermission('EXCLUIR_ALUNO')) { %>
+                          <a class="navbar-item is-danger" href="/alunos">
+                            <i class="fas fa-trash mr-2"></i> Excluir Alunos
+                          </a>
+                          <% } %>
+                            <% } %>
             </div>
           </div>
 
@@ -44,6 +57,19 @@
                   <i class="fas fa-plus mr-2"></i> Novo Plano
                 </a>
                 <% } %>
+                  <% if (hasPermission('EDITAR_PLANO') || hasPermission('EXCLUIR_PLANO')) { %>
+                    <hr class="navbar-divider">
+                    <% if (hasPermission('EDITAR_PLANO')) { %>
+                      <a class="navbar-item is-info" href="/planos">
+                        <i class="fas fa-edit mr-2"></i> Editar Planos
+                      </a>
+                      <% } %>
+                        <% if (hasPermission('EXCLUIR_PLANO')) { %>
+                          <a class="navbar-item is-danger" href="/planos">
+                            <i class="fas fa-trash mr-2"></i> Excluir Planos
+                          </a>
+                          <% } %>
+                            <% } %>
             </div>
           </div>
 
@@ -60,6 +86,12 @@
                   <i class="fas fa-plus mr-2"></i> Novo Check-in
                 </a>
                 <% } %>
+                  <% if (hasPermission('EXCLUIR_CHECKIN')) { %>
+                    <hr class="navbar-divider">
+                    <a class="navbar-item is-danger" href="/checkins">
+                      <i class="fas fa-trash mr-2"></i> Excluir Check-ins
+                    </a>
+                    <% } %>
             </div>
           </div>
 
@@ -77,6 +109,19 @@
                     <i class="fas fa-plus mr-2"></i> Novo Funcionário
                   </a>
                   <% } %>
+                    <% if (hasPermission('EDITAR_FUNCIONARIO') || hasPermission('EXCLUIR_FUNCIONARIO')) { %>
+                      <hr class="navbar-divider">
+                      <% if (hasPermission('EDITAR_FUNCIONARIO')) { %>
+                        <a class="navbar-item is-info" href="/funcionarios">
+                          <i class="fas fa-edit mr-2"></i> Editar Funcionários
+                        </a>
+                        <% } %>
+                          <% if (hasPermission('EXCLUIR_FUNCIONARIO')) { %>
+                            <a class="navbar-item is-danger" href="/funcionarios">
+                              <i class="fas fa-trash mr-2"></i> Excluir Funcionários
+                            </a>
+                            <% } %>
+                              <% } %>
               </div>
             </div>
             <% } %>

@@ -20,10 +20,15 @@ class ApiService {
   constructor() {
     this.api = axios.create({
       baseURL: process.env.API_URL || 'http://localhost:3000',
-      timeout: 10000,
+      timeout: 15000, // Aumentado para 15s
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
+      },
+      // Configuração de retry
+      retry: 3,
+      retryDelay: (retryCount) => {
+        return retryCount * 1000; // Espera 1s, 2s, 3s entre as tentativas
       }
     });
 

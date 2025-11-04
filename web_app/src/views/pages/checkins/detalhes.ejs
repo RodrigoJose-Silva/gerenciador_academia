@@ -1,0 +1,100 @@
+<%- contentFor('body') %>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fas fa-clock"></i>
+                </span>
+                <span>Detalhes do Check-in</span>
+            </span>
+        </h1>
+
+        <% if (locals.success) { %>
+            <div class="notification is-success">
+                <button class="delete"></button>
+                <%= success %>
+            </div>
+            <% } %>
+
+                <% if (locals.error) { %>
+                    <div class="notification is-danger">
+                        <button class="delete"></button>
+                        <%= error %>
+                    </div>
+                    <% } %>
+
+                        <div class="box">
+                            <div class="buttons">
+                                <% if (hasPermission('EXCLUIR_CHECKIN')) { %>
+                                    <form action="/checkins/<%= checkin.id %>/excluir" method="POST" class="is-inline">
+                                        <button type="submit" class="button is-danger"
+                                            onclick="return confirm('Tem certeza que deseja excluir este check-in?')">
+                                            <span class="icon">
+                                                <i class="fas fa-trash"></i>
+                                            </span>
+                                            <span>Excluir</span>
+                                        </button>
+                                    </form>
+                                    <% } %>
+                                        <a href="/checkins" class="button is-light">Voltar</a>
+                            </div>
+
+                            <hr>
+
+                            <div class="columns">
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Data e Hora</label>
+                                        <p>
+                                            <%= new Date(checkin.dataHora).toLocaleString('pt-BR') %>
+                                        </p>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Aluno</label>
+                                        <p>
+                                            <a href="/alunos/<%= checkin.aluno.id %>">
+                                                <%= checkin.aluno.nomeCompleto %>
+                                            </a>
+                                        </p>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Plano do Aluno</label>
+                                        <p>
+                                            <%= checkin.aluno.plano?.nome || 'Sem plano' %>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="column">
+                                    <div class="field">
+                                        <label class="label">Registrado por</label>
+                                        <p>
+                                            <%= checkin.registradoPor?.nome || 'Sistema' %>
+                                        </p>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label">Observação</label>
+                                        <p>
+                                            <%= checkin.observacao || 'Nenhuma observação' %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funcionalidade para fechar as notificações
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+        });
+    </script>

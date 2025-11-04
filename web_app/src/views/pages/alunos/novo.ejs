@@ -1,0 +1,146 @@
+<%- contentFor('body') %>
+
+    <div class="container">
+        <h1 class="title">
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fas fa-user-plus"></i>
+                </span>
+                <span>Novo Aluno</span>
+            </span>
+        </h1>
+
+        <% if (locals.error) { %>
+            <div class="notification is-danger">
+                <button class="delete"></button>
+                <%= error %>
+            </div>
+            <% } %>
+
+                <div class="box">
+                    <form action="/alunos" method="POST">
+                        <div class="field">
+                            <label class="label">Nome Completo</label>
+                            <div class="control">
+                                <input class="input" type="text" name="nomeCompleto"
+                                    value="<%= locals.aluno?.nomeCompleto || '' %>" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <div class="control">
+                                <input class="input" type="email" name="email" value="<%= locals.aluno?.email || '' %>"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Telefone</label>
+                            <div class="control">
+                                <input class="input" type="tel" name="telefone"
+                                    value="<%= locals.aluno?.telefone || '' %>" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">CPF</label>
+                            <div class="control">
+                                <input class="input" type="text" name="cpf" value="<%= locals.aluno?.cpf || '' %>"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Data de Nascimento</label>
+                            <div class="control">
+                                <input class="input" type="date" name="dataNascimento"
+                                    value="<%= locals.aluno?.dataNascimento || '' %>" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Plano</label>
+                            <div class="control">
+                                <div class="select">
+                                    <select name="planoId">
+                                        <option value="">Selecione um plano</option>
+                                        <% planos.forEach(plano=> { %>
+                                            <option value="<%= plano.id %>" <%=locals.aluno?.planoId===plano.id
+                                                ? 'selected' : '' %>>
+                                                <%= plano.nome %> - R$ <%= plano.valor.toFixed(2) %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Status</label>
+                            <div class="control">
+                                <label class="checkbox">
+                                    <input type="checkbox" name="ativo" <%=locals.aluno?.ativo ? 'checked' : '' %>
+                                    checked>
+                                    Ativo
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Endereço</label>
+                            <div class="control">
+                                <input class="input" type="text" name="endereco"
+                                    value="<%= locals.aluno?.endereco || '' %>" required>
+                            </div>
+                        </div>
+
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="submit" class="button is-primary">
+                                    <span class="icon">
+                                        <i class="fas fa-save"></i>
+                                    </span>
+                                    <span>Salvar</span>
+                                </button>
+                            </div>
+                            <div class="control">
+                                <a href="/alunos" class="button is-light">Cancelar</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Funcionalidade para fechar as notificações
+            (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+                const $notification = $delete.parentNode;
+                $delete.addEventListener('click', () => {
+                    $notification.parentNode.removeChild($notification);
+                });
+            });
+
+            // Máscaras para CPF e telefone
+            const cpfInput = document.querySelector('input[name="cpf"]');
+            cpfInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 11) value = value.slice(0, 11);
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                e.target.value = value;
+            });
+
+            const telefoneInput = document.querySelector('input[name="telefone"]');
+            telefoneInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 11) value = value.slice(0, 11);
+                if (value.length === 11) {
+                    value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                } else if (value.length === 10) {
+                    value = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+                }
+                e.target.value = value;
+            });
+        });
+    </script>
